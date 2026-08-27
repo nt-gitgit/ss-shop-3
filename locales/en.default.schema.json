@@ -27,6 +27,7 @@
   },
   "labels": {
     "menu": "Menu",
+    "menu_info": "Optional. Leave blank to use the drop/lookbook/studio anchor links built into this shop.",
     "help_menu": "Help menu",
     "show_clock": "Show live clock",
     "city": "City label",

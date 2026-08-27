@@ -10,12 +10,20 @@
     "made_by": "Made by",
     "questions": "Questions",
     "page": "Page",
+    "nav": {
+      "drop": "Drop 01",
+      "black_friday": "Black Friday",
+      "lookbook": "Lookbook",
+      "studio": "Studio note"
+    },
     "footer": {
       "shop": "Shop",
       "help": "Help",
       "studio": "Studio",
       "newsletter": "Our seasonal newsletter",
-      "write_us": "Write us"
+      "write_us": "Write us",
+      "shipping_returns": "Shipping & returns",
+      "size_guide": "Size guide"
     },
     "social": {
       "facebook": "Facebook",

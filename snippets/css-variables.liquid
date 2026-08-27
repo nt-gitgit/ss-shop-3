@@ -131,10 +131,6 @@
     --section-m: 80px;
     --section-l: 120px;
 
-    {% # Surface %}
-    --border-color: hsla(var(--text-color) / 0.2);
-    --detail-color: hsla(var(--text-color) / 0.2);
-
     {% # Motion, circular eases only %}
     --ease-out: cubic-bezier(0, 0.55, 0.45, 1);
     --ease-in-out: cubic-bezier(0.85, 0, 0.15, 1);
@@ -182,12 +178,14 @@
     --background-color: 49 14% 85%;
   }
 
-  {% # Anything carrying a pair paints itself and transitions between pairs %}
+  {% # Anything carrying a pair paints itself, derives its hairline tokens from that same pair, and transitions between pairs %}
   [class*='theme-'],
   [style*='--text-color'],
   body {
     color: hsl(var(--text-color));
     background-color: hsl(var(--background-color));
+    --border-color: hsla(var(--text-color) / 0.2);
+    --detail-color: hsla(var(--text-color) / 0.2);
     transition: color var(--theme-transition), background-color var(--theme-transition),
       fill var(--theme-transition);
   }

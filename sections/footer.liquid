@@ -13,30 +13,37 @@
   {% endif %}
 
   <div class="site-footer__grid">
-    {% if section.settings.menu != blank %}
-      <div class="site-footer__col">
-        <div class="trumpet site-footer__col-label">{{ 'general.footer.shop' | t }}</div>
-        <div class="site-footer__links-col ts-body-s">
+    <div class="site-footer__col">
+      <div class="trumpet site-footer__col-label">{{ 'general.footer.shop' | t }}</div>
+      <div class="site-footer__links-col ts-body-s">
+        {% if section.settings.menu != blank %}
           {% for link in section.settings.menu.links %}
             {{ link.title | link_to: link.url }}
           {% endfor %}
-        </div>
+        {% else %}
+          <a href="{{ routes.root_url }}#drop">{{ 'general.nav.drop' | t }}</a>
+          <a href="{{ routes.root_url }}#lookbook">{{ 'general.nav.lookbook' | t }}</a>
+          <a href="{{ routes.root_url }}#studio">{{ 'general.nav.studio' | t }}</a>
+        {% endif %}
       </div>
-    {% endif %}
+    </div>
 
-    {% if section.settings.help_menu != blank %}
-      <div class="site-footer__col">
-        <div class="trumpet site-footer__col-label">{{ 'general.footer.help' | t }}</div>
-        <div class="site-footer__links-col ts-body-s">
+    <div class="site-footer__col">
+      <div class="trumpet site-footer__col-label">{{ 'general.footer.help' | t }}</div>
+      <div class="site-footer__links-col ts-body-s">
+        {% if section.settings.help_menu != blank %}
           {% for link in section.settings.help_menu.links %}
             {{ link.title | link_to: link.url }}
           {% endfor %}
-          {% if section.settings.email != blank %}
-            <a href="mailto:{{ section.settings.email }}">{{ 'general.footer.write_us' | t }}</a>
-          {% endif %}
-        </div>
+        {% else %}
+          <a href="{{ routes.root_url }}#drop">{{ 'general.footer.shipping_returns' | t }}</a>
+          <a href="{{ routes.root_url }}#drop">{{ 'general.footer.size_guide' | t }}</a>
+        {% endif %}
+        {% if section.settings.email != blank %}
+          <a href="mailto:{{ section.settings.email }}">{{ 'general.footer.write_us' | t }}</a>
+        {% endif %}
       </div>
-    {% endif %}
+    </div>
 
     {% if section.settings.address != blank %}
       <div class="site-footer__col">
