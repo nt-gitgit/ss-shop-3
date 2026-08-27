@@ -1,0 +1,329 @@
+{% comment %}
+  Site footer. A fat sign-off headline, a shop/help/studio link grid, a
+  native Shopify customer-signup newsletter form, and a byline row with the
+  live clock.
+
+  @example
+  {% section 'footer' %}
+{% endcomment %}
+
+<footer class="site-footer {{ section.settings.theme }} full-width">
+  {% if section.settings.heading != blank %}
+    <div class="site-footer__headline ts-h2" data-reveal>{{ section.settings.heading }}</div>
+  {% endif %}
+
+  <div class="site-footer__grid">
+    {% if section.settings.menu != blank %}
+      <div class="site-footer__col">
+        <div class="trumpet site-footer__col-label">{{ 'general.footer.shop' | t }}</div>
+        <div class="site-footer__links-col ts-body-s">
+          {% for link in section.settings.menu.links %}
+            {{ link.title | link_to: link.url }}
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+    {% if section.settings.help_menu != blank %}
+      <div class="site-footer__col">
+        <div class="trumpet site-footer__col-label">{{ 'general.footer.help' | t }}</div>
+        <div class="site-footer__links-col ts-body-s">
+          {% for link in section.settings.help_menu.links %}
+            {{ link.title | link_to: link.url }}
+          {% endfor %}
+          {% if section.settings.email != blank %}
+            <a href="mailto:{{ section.settings.email }}">{{ 'general.footer.write_us' | t }}</a>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+
+    {% if section.settings.address != blank %}
+      <div class="site-footer__col">
+        <div class="trumpet site-footer__col-label">{{ 'general.footer.studio' | t }}</div>
+        <div class="ts-body-s site-footer__address">{{ section.settings.address }}</div>
+      </div>
+    {% endif %}
+
+    <div class="site-footer__col">
+      <div class="trumpet site-footer__col-label">{{ 'general.footer.newsletter' | t }}</div>
+      {% form 'customer', id: 'footer-newsletter-form', class: 'site-footer__newsletter-form' %}
+        <input type="hidden" name="contact[tags]" value="newsletter">
+        {% if form.posted_successfully? %}
+          <p class="ts-label-s">{{ 'newsletter.success' | t }}</p>
+        {% else %}
+          <div class="site-footer__newsletter-row">
+            <input
+              type="email"
+              name="contact[email]"
+              class="site-footer__newsletter-input"
+              placeholder="{{ 'newsletter.email_label' | t }}"
+              required
+            >
+            <button type="submit" class="site-footer__newsletter-submit ts-cta">{{ 'newsletter.submit' | t }}</button>
+          </div>
+        {% endif %}
+      {% endform %}
+      {% if section.settings.newsletter_note != blank %}
+        <p class="ts-label-s site-footer__newsletter-note">{{ section.settings.newsletter_note }}</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="site-footer__bottom">
+    <span class="ts-label-s site-footer__copyright">
+      {{ 'now' | date: '%Y' }} &middot; {{ shop.name | link_to: routes.root_url }} &middot; {{ section.settings.social_handle }}
+    </span>
+
+    {% liquid
+      assign socials = ''
+      if section.settings.social_instagram != blank
+        assign socials = socials | append: '1'
+      endif
+      if section.settings.social_facebook != blank
+        assign socials = socials | append: '1'
+      endif
+      if section.settings.social_twitter != blank
+        assign socials = socials | append: '1'
+      endif
+    %}
+
+    {% if socials != blank %}
+      <div class="site-footer__social">
+        {% if section.settings.social_instagram != blank %}
+          <a href="{{ section.settings.social_instagram }}" class="tick-link ts-label-s" target="_blank" rel="noopener">{{ 'general.social.instagram' | t }}</a>
+        {% endif %}
+        {% if section.settings.social_facebook != blank %}
+          <a href="{{ section.settings.social_facebook }}" class="tick-link ts-label-s" target="_blank" rel="noopener">{{ 'general.social.facebook' | t }}</a>
+        {% endif %}
+        {% if section.settings.social_twitter != blank %}
+          <a href="{{ section.settings.social_twitter }}" class="tick-link ts-label-s" target="_blank" rel="noopener">{{ 'general.social.twitter' | t }}</a>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    {% if section.settings.show_byline and section.settings.byline != blank %}
+      <div class="site-footer__byline ts-label-s">
+        {% if section.settings.show_clock %}
+          {% render 'clock', timezone: section.settings.timezone %}
+        {% endif %}
+        <span>{{ section.settings.byline }}</span>
+      </div>
+    {% endif %}
+  </div>
+</footer>
+
+{% stylesheet %}
+  .site-footer {
+    padding: var(--section-m) var(--grid-margin) 2rem;
+  }
+
+  .site-footer__headline {
+    margin-bottom: var(--section-s);
+  }
+
+  .site-footer__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    border-top: 1px solid var(--border-color);
+    padding-top: 18px;
+  }
+
+  @media (max-width: 899px) {
+    .site-footer__grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 32px;
+    }
+  }
+
+  .site-footer__col-label {
+    opacity: 0.55;
+    margin-bottom: 10px;
+  }
+
+  .site-footer__links-col {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .site-footer__links-col a,
+  .site-footer__address a {
+    color: currentcolor;
+    text-decoration: none;
+  }
+
+  .site-footer__address {
+    opacity: 0.75;
+    white-space: pre-line;
+  }
+
+  .site-footer__newsletter-row {
+    display: flex;
+    gap: 8px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 8px;
+  }
+
+  .site-footer__newsletter-input {
+    flex: 1;
+    border: 0;
+    background: transparent;
+    color: currentcolor;
+    font-family: var(--sans-serif);
+    font-size: 0.85rem;
+    outline: none;
+  }
+
+  .site-footer__newsletter-submit {
+    background: transparent;
+    border: 0;
+    color: currentcolor;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .site-footer__newsletter-note {
+    opacity: 0.5;
+    margin-top: 10px;
+  }
+
+  .site-footer__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 32px;
+  }
+
+  .site-footer__copyright {
+    opacity: 0.55;
+  }
+
+  .site-footer__copyright a {
+    color: currentcolor;
+  }
+
+  .site-footer__social {
+    display: flex;
+    gap: 1.4rem;
+  }
+
+  .site-footer__byline {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    opacity: 0.55;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.footer",
+  "settings": [
+    {
+      "type": "select",
+      "id": "theme",
+      "label": "t:labels.theme",
+      "options": [
+        { "value": "theme-light", "label": "t:options.theme.light" },
+        { "value": "theme-dark", "label": "t:options.theme.dark" },
+        { "value": "theme-stone", "label": "t:options.theme.stone" },
+        { "value": "theme-red", "label": "t:options.theme.red" },
+        { "value": "theme-grey", "label": "t:options.theme.grey" },
+        { "value": "", "label": "t:options.theme.custom" }
+      ],
+      "default": ""
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:labels.heading",
+      "default": "All seasons"
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "t:labels.menu"
+    },
+    {
+      "type": "link_list",
+      "id": "help_menu",
+      "label": "t:labels.help_menu"
+    },
+    {
+      "type": "text",
+      "id": "email",
+      "label": "t:labels.email"
+    },
+    {
+      "type": "textarea",
+      "id": "address",
+      "label": "t:labels.address",
+      "default": "Nikolaj Plads 8,3\n1067 Copenhagen\nDenmark"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_note",
+      "label": "t:labels.newsletter_note",
+      "default": "Four times a year, roughly."
+    },
+    {
+      "type": "header",
+      "content": "t:general.social_media"
+    },
+    {
+      "type": "text",
+      "id": "social_handle",
+      "label": "t:labels.social_handle",
+      "default": "@sprngsmmr"
+    },
+    {
+      "type": "url",
+      "id": "social_instagram",
+      "label": "t:labels.social_instagram"
+    },
+    {
+      "type": "url",
+      "id": "social_facebook",
+      "label": "t:labels.social_facebook"
+    },
+    {
+      "type": "url",
+      "id": "social_twitter",
+      "label": "t:labels.social_twitter"
+    },
+    {
+      "type": "header",
+      "content": "t:general.rail"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_byline",
+      "label": "t:labels.show_byline",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "byline",
+      "label": "t:labels.byline",
+      "default": "Spring/Summer™ Shop"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_clock",
+      "label": "t:labels.show_clock",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "timezone",
+      "label": "t:labels.timezone",
+      "info": "t:labels.timezone_info",
+      "default": "Europe/Copenhagen"
+    }
+  ]
+}
+{% endschema %}

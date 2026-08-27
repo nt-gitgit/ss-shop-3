@@ -1,0 +1,105 @@
+{% comment %}
+  Collection page: title, an optional description, and a product grid
+  reusing the same card as the homepage drop.
+
+  @example
+  {% section 'main-collection' %}
+{% endcomment %}
+
+<div class="collection full-width" data-reveal>
+  <div class="collection__header">
+    <div class="trumpet-row">
+      <span class="trumpet-row__tick" aria-hidden="true"></span>
+      <span class="trumpet">{{ 'collections.title' | t }}</span>
+    </div>
+    <h1 class="ts-h2 collection__title">{{ collection.title }}</h1>
+    {% if collection.description != blank %}
+      <div class="ts-body-l collection__description rich-text">{{ collection.description }}</div>
+    {% endif %}
+  </div>
+
+  {% paginate collection.products by 24 %}
+    {% if collection.products.size > 0 %}
+      <div class="collection__grid">
+        {% for product in collection.products %}
+          {% liquid
+            assign card_delay = forloop.index0 | times: 0.04
+            assign card_index = forloop.index | prepend: '0' | slice: -2, 2
+          %}
+          {% render 'product-card', product: product, reveal_delay: card_delay, index: card_index %}
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="ts-body-l collection__empty">{{ 'collections.no_products' | t }}</p>
+    {% endif %}
+
+    {% if paginate.pages > 1 %}
+      <nav class="collection__pagination ts-label-s" aria-label="{{ 'collections.pagination' | t }}">
+        {% if paginate.previous %}
+          <a href="{{ paginate.previous.url }}">{{ 'collections.previous' | t }}</a>
+        {% endif %}
+        {% if paginate.next %}
+          <a href="{{ paginate.next.url }}">{{ 'collections.next' | t }}</a>
+        {% endif %}
+      </nav>
+    {% endif %}
+  {% endpaginate %}
+</div>
+
+{% stylesheet %}
+  .collection {
+    padding: var(--section-s) var(--grid-margin) var(--section-m);
+  }
+
+  .collection__header {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 24px;
+    margin-bottom: 32px;
+  }
+
+  .collection__title {
+    margin: 0;
+  }
+
+  .collection__description {
+    opacity: 0.75;
+    max-width: 60ch;
+  }
+
+  .collection__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  @media (max-width: 899px) {
+    .collection__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .collection__empty {
+    opacity: 0.6;
+  }
+
+  .collection__pagination {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    margin-top: 48px;
+  }
+
+  .collection__pagination a {
+    color: currentcolor;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.collection",
+  "settings": []
+}
+{% endschema %}

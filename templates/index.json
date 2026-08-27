@@ -1,0 +1,55 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero",
+      "settings": {}
+    },
+    "campaign-banner": {
+      "type": "campaign-banner",
+      "settings": {}
+    },
+    "black-friday": {
+      "type": "black-friday",
+      "settings": {}
+    },
+    "drop": {
+      "type": "featured-collection",
+      "settings": {
+        "collection": "all",
+        "anchor": "drop"
+      }
+    },
+    "marquee": {
+      "type": "marquee",
+      "settings": {}
+    },
+    "lookbook": {
+      "type": "lookbook",
+      "blocks": {
+        "image-1": {
+          "type": "image",
+          "settings": { "span": "7", "aspect_ratio": "4/3", "caption": "01 — Monday, 09:12. The hoodie has never left the building." }
+        },
+        "image-2": {
+          "type": "image",
+          "settings": { "span": "5", "aspect_ratio": "4/5", "caption": "02 — Cap, worn by a producer who insists it's for the sun." }
+        },
+        "image-3": {
+          "type": "image",
+          "settings": { "span": "5", "aspect_ratio": "4/3", "caption": "03 — Nikolaj Plads to Torvehallerne, four minutes." }
+        },
+        "image-4": {
+          "type": "image",
+          "settings": { "span": "7", "aspect_ratio": "16/9", "caption": "04 — One colour. One pass. One list of ten things." }
+        }
+      },
+      "block_order": ["image-1", "image-2", "image-3", "image-4"],
+      "settings": {}
+    },
+    "studio-note": {
+      "type": "studio-note",
+      "settings": {}
+    }
+  },
+  "order": ["hero", "campaign-banner", "black-friday", "drop", "marquee", "lookbook", "studio-note"]
+}

@@ -1,0 +1,162 @@
+{% comment %}
+  Homepage hero: trumpet label, a huge display headline, and a four-column
+  info row (the range / ships from / shipping / a CTA into the drop).
+
+  @example
+  {% section 'hero' %}
+{% endcomment %}
+
+<div class="hero {{ section.settings.theme }} full-width" data-reveal>
+  <div class="trumpet-row">
+    <span class="trumpet-row__tick" aria-hidden="true"></span>
+    <span class="trumpet">{{ section.settings.eyebrow }}</span>
+  </div>
+
+  <h1 class="ts-h1 hero__heading">{{ section.settings.heading }}</h1>
+
+  <div class="hero__info-row">
+    <div class="hero__info-col">
+      <div class="trumpet hero__info-label">{{ section.settings.col_1_label }}</div>
+      <div class="ts-body-l">{{ section.settings.col_1_body }}</div>
+    </div>
+    <div class="hero__info-col">
+      <div class="trumpet hero__info-label">{{ section.settings.col_2_label }}</div>
+      <div class="ts-body-l">{{ section.settings.col_2_body }}</div>
+    </div>
+    <div class="hero__info-col">
+      <div class="trumpet hero__info-label">{{ section.settings.col_3_label }}</div>
+      <div class="ts-body-l">{{ section.settings.col_3_body }}</div>
+    </div>
+    <div class="hero__info-col hero__info-cta">
+      <a href="{{ section.settings.button_link | default: '#drop' }}" class="arrow-link">
+        <span class="link-title ts-cta">{{ section.settings.button_label }}</span>
+        <span class="button__icon" aria-hidden="true">{{ 'icon-arrow.svg' | inline_asset_content }}</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .hero {
+    padding: var(--section-m) var(--grid-margin) 0;
+  }
+
+  .hero__heading {
+    margin: 28px 0 0;
+    text-wrap: balance;
+  }
+
+  .hero__info-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    align-items: end;
+    border-top: 1px solid var(--border-color);
+    margin-top: var(--section-s);
+    padding-top: 18px;
+    padding-bottom: var(--section-s);
+  }
+
+  .hero__info-label {
+    opacity: 0.55;
+    margin-bottom: 6px;
+  }
+
+  .hero__info-cta {
+    justify-self: end;
+    text-align: right;
+  }
+
+  @media (max-width: 899px) {
+    .hero__info-row {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .hero__info-cta {
+      justify-self: start;
+      text-align: left;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.hero",
+  "settings": [
+    {
+      "type": "select",
+      "id": "theme",
+      "label": "t:labels.theme",
+      "options": [
+        { "value": "theme-light", "label": "t:options.theme.light" },
+        { "value": "theme-dark", "label": "t:options.theme.dark" },
+        { "value": "theme-stone", "label": "t:options.theme.stone" },
+        { "value": "theme-red", "label": "t:options.theme.red" },
+        { "value": "theme-grey", "label": "t:options.theme.grey" },
+        { "value": "", "label": "t:options.theme.custom" }
+      ],
+      "default": ""
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:labels.eyebrow",
+      "default": "Drop 01 — All Seasons · Printed in Copenhagen"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "t:labels.heading",
+      "default": "Merch for all seasons"
+    },
+    {
+      "type": "text",
+      "id": "col_1_label",
+      "label": "t:labels.text",
+      "default": "The range"
+    },
+    {
+      "type": "text",
+      "id": "col_1_body",
+      "label": "t:labels.body",
+      "default": "Six things. Small runs. No season two promised."
+    },
+    {
+      "type": "text",
+      "id": "col_2_label",
+      "label": "t:labels.text",
+      "default": "Ships from"
+    },
+    {
+      "type": "text",
+      "id": "col_2_body",
+      "label": "t:labels.body",
+      "default": "Nikolaj Plads 8,3 · 1067 Copenhagen"
+    },
+    {
+      "type": "text",
+      "id": "col_3_label",
+      "label": "t:labels.text",
+      "default": "Shipping"
+    },
+    {
+      "type": "text",
+      "id": "col_3_body",
+      "label": "t:labels.body",
+      "default": "Free over 600 DKK. Otherwise 45 DKK."
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "t:labels.button_label",
+      "default": "Shop the drop"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "t:labels.link"
+    }
+  ],
+  "presets": [{ "name": "t:general.hero" }]
+}
+{% endschema %}

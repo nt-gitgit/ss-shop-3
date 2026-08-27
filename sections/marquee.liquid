@@ -1,0 +1,106 @@
+{% comment %}
+  A scrolling strip of short facts (shipping, returns, production notes).
+  One list of lines, duplicated once so the CSS animation loops seamlessly.
+
+  @example
+  {% section 'marquee' %}
+{% endcomment %}
+
+{% liquid
+  assign lines = section.settings.lines | newline_to_br | split: '<br />'
+%}
+
+<div class="marquee {{ section.settings.theme }} full-width" aria-hidden="true">
+  <div class="marquee__track" style="animation-duration: {{ section.settings.speed }}s">
+    <div class="marquee__set">
+      {% for line in lines %}
+        <span class="ts-label-m marquee__item">{{ line | strip }}</span>
+      {% endfor %}
+    </div>
+    <div class="marquee__set">
+      {% for line in lines %}
+        <span class="ts-label-m marquee__item">{{ line | strip }}</span>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .marquee {
+    padding: 14px 0;
+    overflow: hidden;
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .marquee__track {
+    display: flex;
+    width: 200%;
+    animation-name: marquee-scroll;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+  }
+
+  .marquee__set {
+    display: flex;
+    gap: 54px;
+    width: 50%;
+    flex: none;
+    padding-right: 54px;
+  }
+
+  @keyframes marquee-scroll {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marquee__track {
+      animation: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.marquee",
+  "settings": [
+    {
+      "type": "select",
+      "id": "theme",
+      "label": "t:labels.theme",
+      "options": [
+        { "value": "theme-light", "label": "t:options.theme.light" },
+        { "value": "theme-dark", "label": "t:options.theme.dark" },
+        { "value": "theme-stone", "label": "t:options.theme.stone" },
+        { "value": "theme-red", "label": "t:options.theme.red" },
+        { "value": "theme-grey", "label": "t:options.theme.grey" },
+        { "value": "", "label": "t:options.theme.custom" }
+      ],
+      "default": "theme-red"
+    },
+    {
+      "type": "textarea",
+      "id": "lines",
+      "label": "t:labels.marquee_text",
+      "info": "t:labels.list_text_info",
+      "default": "Free shipping over 600 DKK\nShips in 2–3 days from Copenhagen\n30 days to change your mind\nPrinted in small runs\nNo plastic in the parcel"
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "t:labels.speed",
+      "min": 10,
+      "max": 90,
+      "step": 2,
+      "unit": "s",
+      "default": 38
+    }
+  ],
+  "presets": [{ "name": "t:general.marquee" }]
+}
+{% endschema %}

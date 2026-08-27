@@ -1,0 +1,251 @@
+{% comment %}
+  Product detail page. Image + thumbnail strip on one side, title, price,
+  variant pickers, quantity and add-to-cart on the other. Variant matching
+  runs client-side off an embedded JSON blob (assets/product-form.js) so
+  there's no second fetch to /products/{handle}.js.
+
+  @example
+  {% section 'main-product' %}
+{% endcomment %}
+
+<div class="product full-width" data-reveal>
+  <div class="product__grid">
+    <div class="product__gallery">
+      <div class="product__main-image" data-product-main-image>
+        {% if product.featured_image %}
+          {{ product.featured_image | image_url: width: 1400 | image_tag: loading: 'eager', widths: '600,900,1200,1400', sizes: '(min-width: 900px) 50vw, 100vw', id: 'product-main-image' }}
+        {% else %}
+          {% render 'media-placeholder', class: 'product__placeholder' %}
+        {% endif %}
+      </div>
+      {% if product.images.size > 1 %}
+        <div class="product__thumbs">
+          {% for image in product.images %}
+            <button type="button" class="product__thumb" data-product-thumb data-image-src="{{ image | image_url: width: 1400 }}" aria-label="{{ 'products.gallery' | t }} {{ forloop.index }}">
+              {{ image | image_url: width: 200 | image_tag: loading: 'lazy' }}
+            </button>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="product__info">
+      {% if product.type != blank %}
+        <span class="trumpet product__type">{{ product.type }}</span>
+      {% endif %}
+
+      <h1 class="ts-h2 product__title">{{ product.title }}</h1>
+
+      <div class="price product__price ff-mono" data-product-price>
+        <span class="price__amount" data-price-amount>{{ product.selected_or_first_available_variant.price | money }}</span>
+        {% if product.selected_or_first_available_variant.compare_at_price > product.selected_or_first_available_variant.price %}
+          <span class="price__compare-at" data-price-compare-at>{{ product.selected_or_first_available_variant.compare_at_price | money }}</span>
+        {% endif %}
+      </div>
+
+      {% if product.description != blank %}
+        <div class="rich-text ts-body-l product__description">{{ product.description }}</div>
+      {% endif %}
+
+      <form method="post" action="{{ routes.cart_add_url }}" data-product-form data-product-form-main>
+        <script type="application/json" data-product-json>{{ product | json }}</script>
+
+        {% unless product.has_only_default_variant %}
+          {% for option in product.options_with_values %}
+            <div class="product__option">
+              <label class="trumpet product__option-label" for="option-{{ option.position }}">{{ option.name }}</label>
+              <div class="product__option-values" data-option-index="{{ option.position | minus: 1 }}">
+                {% for value in option.values %}
+                  <button type="button" class="product__option-value" data-option-value="{{ value | escape }}">{{ value }}</button>
+                {% endfor %}
+              </div>
+            </div>
+          {% endfor %}
+        {% endunless %}
+
+        <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}" data-variant-id-input>
+
+        <div class="product__add-row">
+          <div class="quantity-selector" data-quantity-selector>
+            <button type="button" data-quantity-decrease aria-label="{{ 'cart.decrease_quantity' | t }}">
+              {{ 'icon-minus.svg' | inline_asset_content }}
+            </button>
+            <input type="number" min="1" value="1" name="quantity" data-quantity-input aria-label="{{ 'products.quantity' | t }}">
+            <button type="button" data-quantity-increase aria-label="{{ 'cart.increase_quantity' | t }}">
+              {{ 'icon-plus.svg' | inline_asset_content }}
+            </button>
+          </div>
+
+          <button
+            type="submit"
+            class="arrow-link product__submit"
+            data-add-to-cart
+            data-adding-text="{{ 'products.adding' | t }}"
+            data-added-text="{{ 'products.added' | t }}"
+            data-sold-out-text="{{ 'products.sold_out' | t }}"
+            {% unless product.selected_or_first_available_variant.available %}disabled{% endunless %}
+          >
+            <span class="link-title ts-cta" data-product-submit-label>
+              {% if product.selected_or_first_available_variant.available %}{{ 'products.add_to_cart' | t }}{% else %}{{ 'products.sold_out' | t }}{% endif %}
+            </span>
+            <span class="button__icon" aria-hidden="true">{{ 'icon-arrow.svg' | inline_asset_content }}</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .product {
+    padding: var(--section-s) var(--grid-margin) var(--section-m);
+  }
+
+  .product__grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .product__gallery {
+    grid-column: span 12;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .product__info {
+    grid-column: span 12;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  @media (min-width: 900px) {
+    .product__gallery {
+      grid-column: span 7;
+    }
+
+    .product__info {
+      grid-column: span 5;
+      padding-top: 1rem;
+    }
+  }
+
+  .product__main-image,
+  .product__placeholder {
+    border-radius: var(--br);
+    overflow: hidden;
+    aspect-ratio: 1 / 1.15;
+    background: hsla(var(--text-color) / 0.06);
+  }
+
+  .product__main-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .product__thumbs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .product__thumb {
+    width: 4rem;
+    height: 4.6rem;
+    border-radius: var(--br);
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    padding: 0;
+    background: none;
+    cursor: pointer;
+  }
+
+  .product__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .product__type {
+    opacity: 0.55;
+  }
+
+  .product__title {
+    margin: 0;
+  }
+
+  .product__price {
+    font-size: var(--ts-body-l-fs);
+  }
+
+  .product__description {
+    opacity: 0.8;
+    max-width: 46ch;
+  }
+
+  .product__option {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .product__option-label {
+    opacity: 0.55;
+  }
+
+  .product__option-values {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .product__option-value {
+    font-family: var(--mono);
+    font-size: var(--ts-label-s-fs);
+    text-transform: uppercase;
+    letter-spacing: var(--ts-label-s-ls);
+    padding: 8px 11px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--br);
+    background: transparent;
+    color: currentcolor;
+    cursor: pointer;
+    transition: background-color 250ms var(--ease-out), color 250ms var(--ease-out);
+  }
+
+  .product__option-value.is-selected {
+    background-color: hsl(var(--text-color));
+    color: hsl(var(--background-color));
+  }
+
+  .product__option-value:disabled {
+    opacity: 0.35;
+    border-style: dashed;
+    cursor: not-allowed;
+  }
+
+  .product__add-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .product__submit {
+    padding: 0.9rem 1.1rem;
+    border: 1px solid currentcolor;
+    border-radius: var(--br);
+    max-width: none;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.product",
+  "settings": []
+}
+{% endschema %}

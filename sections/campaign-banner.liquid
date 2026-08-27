@@ -1,0 +1,103 @@
+{% comment %}
+  A full-bleed campaign still with two corner labels. No headline, no CTA --
+  purely a photograph doing the talking between the hero and the drop.
+
+  @example
+  {% section 'campaign-banner' %}
+{% endcomment %}
+
+<div class="campaign-banner full-width" data-reveal>
+  <div class="campaign-banner__frame">
+    {% if section.settings.image != blank %}
+      {{
+        section.settings.image
+        | image_url: width: 2400
+        | image_tag: loading: 'lazy', widths: '800,1200,1600,2000,2400', sizes: '100vw', class: 'campaign-banner__image'
+      }}
+    {% else %}
+      {% render 'media-placeholder', class: 'campaign-banner__placeholder', label: section.settings.placeholder_label %}
+    {% endif %}
+
+    {% if section.settings.label_left != blank %}
+      <div class="trumpet campaign-banner__label campaign-banner__label--left">{{ section.settings.label_left }}</div>
+    {% endif %}
+    {% if section.settings.label_right != blank %}
+      <div class="trumpet campaign-banner__label campaign-banner__label--right">{{ section.settings.label_right }}</div>
+    {% endif %}
+  </div>
+</div>
+
+{% stylesheet %}
+  .campaign-banner {
+    padding: 1.2rem var(--grid-margin) 0;
+  }
+
+  .campaign-banner__frame {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--br);
+    aspect-ratio: 2.45 / 1;
+    color: var(--white);
+  }
+
+  @media (max-width: 899px) {
+    .campaign-banner__frame {
+      aspect-ratio: 4 / 3;
+    }
+  }
+
+  .campaign-banner__image,
+  .campaign-banner__placeholder {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .campaign-banner__label {
+    position: absolute;
+    bottom: 14px;
+    opacity: 0.85;
+  }
+
+  .campaign-banner__label--left {
+    left: 16px;
+  }
+
+  .campaign-banner__label--right {
+    right: 16px;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.campaign_banner",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:labels.image"
+    },
+    {
+      "type": "text",
+      "id": "placeholder_label",
+      "label": "t:labels.placeholder",
+      "default": "Campaign still, 2400x980"
+    },
+    {
+      "type": "text",
+      "id": "label_left",
+      "label": "t:labels.text",
+      "default": "SS·01·2026"
+    },
+    {
+      "type": "text",
+      "id": "label_right",
+      "label": "t:labels.text",
+      "default": "Allways in season"
+    }
+  ],
+  "presets": [{ "name": "t:general.campaign_banner" }]
+}
+{% endschema %}

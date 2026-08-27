@@ -1,0 +1,93 @@
+{
+  "general": {
+    "accessibility": {
+      "skip_to_content": "Skip to content",
+      "main_menu": "Main menu",
+      "account": "Account",
+      "cart": "Cart"
+    },
+    "close": "Close",
+    "made_by": "Made by",
+    "questions": "Questions",
+    "page": "Page",
+    "footer": {
+      "shop": "Shop",
+      "help": "Help",
+      "studio": "Studio",
+      "newsletter": "Our seasonal newsletter",
+      "write_us": "Write us"
+    },
+    "social": {
+      "facebook": "Facebook",
+      "instagram": "Instagram",
+      "twitter": "Twitter"
+    },
+    "404": {
+      "title": "404",
+      "not_found": "Page not found.",
+      "back_to_shopping": "Back to shopping"
+    }
+  },
+  "shop": {
+    "cart_headline": "In your bag — {{ quantity }} products",
+    "pay_now": "Checkout"
+  },
+  "cart": {
+    "title": "Cart",
+    "remove": "Remove",
+    "decrease_quantity": "Decrease quantity",
+    "increase_quantity": "Increase quantity",
+    "quantity": "Quantity",
+    "subtotal": "Subtotal",
+    "taxes_shipping_note": "Taxes and shipping calculated at checkout.",
+    "free_shipping_remaining_html": "{{ amount }} more and shipping is free.",
+    "free_shipping_unlocked": "Shipping is on us.",
+    "empty_html": "Nothing in the bag yet.",
+    "browse_collection": "Browse the drop"
+  },
+  "products": {
+    "add_to_cart": "Add to cart",
+    "adding": "Adding…",
+    "added": "Added",
+    "sold_out": "Sold out",
+    "unavailable": "Unavailable",
+    "quantity": "Quantity",
+    "description": "Description",
+    "gallery": "Product image",
+    "from": "From"
+  },
+  "collections": {
+    "title": "Collection",
+    "no_products": "No products to show yet.",
+    "pagination": "Pagination",
+    "previous": "Previous page",
+    "next": "Next page"
+  },
+  "newsletter": {
+    "email_label": "Email",
+    "submit": "Sign up",
+    "success": "Thanks — you're on the list."
+  },
+  "countdown": {
+    "days": "Days",
+    "hours": "Hrs",
+    "minutes": "Min",
+    "seconds": "Sec",
+    "notify_submit": "Notify me",
+    "notify_success": "You're on the list — we'll email when the doors open."
+  },
+  "search": {
+    "placeholder": "Search products and pages",
+    "submit": "Search",
+    "no_results_html": "No results found for “{{ terms }}”",
+    "results_for_html": "{{ count }} results for “{{ terms }}”"
+  },
+  "password": {
+    "title": "This shop is private",
+    "password": "Password",
+    "enter": "Enter"
+  },
+  "media": {
+    "pending": "Photography to come"
+  }
+}

@@ -1,0 +1,117 @@
+{% comment %}
+  The drop: a product grid pulled from a chosen collection. Add products to
+  that collection in the admin and they show up here automatically -- ranked
+  by the collection's own sort order.
+
+  @example
+  {% section 'featured-collection' %}
+{% endcomment %}
+
+{% liquid
+  assign collection = collections[section.settings.collection]
+  assign limit = section.settings.products_to_show
+%}
+
+<div id="{{ section.settings.anchor | default: 'drop' }}" class="featured-collection full-width" data-reveal>
+  <div class="featured-collection__header">
+    <div class="trumpet-row">
+      <span class="trumpet-row__tick" aria-hidden="true"></span>
+      <span class="trumpet">{{ section.settings.label }}</span>
+    </div>
+    {% if section.settings.helper != blank %}
+      <span class="ts-label-s featured-collection__helper">{{ section.settings.helper }}</span>
+    {% endif %}
+  </div>
+
+  {% if collection != blank and collection.products.size > 0 %}
+    <div class="featured-collection__grid">
+      {% for product in collection.products limit: limit %}
+        {% liquid
+          assign card_delay = forloop.index0 | times: 0.06
+          assign card_index = forloop.index | prepend: '0' | slice: -2, 2
+        %}
+        {% render 'product-card', product: product, reveal_delay: card_delay, index: card_index %}
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="ts-body-l featured-collection__empty">{{ 'collections.no_products' | t }}</p>
+  {% endif %}
+</div>
+
+{% stylesheet %}
+  .featured-collection {
+    padding: var(--section-m) var(--grid-margin) var(--section-s);
+  }
+
+  .featured-collection__header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 24px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 16px;
+    margin-bottom: 32px;
+  }
+
+  .featured-collection__helper {
+    opacity: 0.55;
+  }
+
+  .featured-collection__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  @media (max-width: 899px) {
+    .featured-collection__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .featured-collection__empty {
+    opacity: 0.6;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.featured_collection",
+  "settings": [
+    {
+      "type": "text",
+      "id": "anchor",
+      "label": "t:labels.anchor_id",
+      "info": "t:labels.anchor_id_info",
+      "default": "drop"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "t:labels.collection"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "label": "t:labels.products_to_show",
+      "min": 2,
+      "max": 24,
+      "step": 1,
+      "default": 6
+    },
+    {
+      "type": "text",
+      "id": "label",
+      "label": "t:labels.text",
+      "default": "The drop — six pieces"
+    },
+    {
+      "type": "text",
+      "id": "helper",
+      "label": "t:labels.text",
+      "default": "Pick a size to add. It goes straight in the bag."
+    }
+  ],
+  "presets": [{ "name": "t:general.featured_collection" }]
+}
+{% endschema %}

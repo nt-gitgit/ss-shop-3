@@ -1,0 +1,192 @@
+{% doc %}
+  Tokens: faces, the theme contract, the type scale, layout, surface and
+  motion. Ported from the agency's own design system (springsummer.dk) for
+  its Black Friday merch drop.
+
+  Two things here are load bearing and easy to get wrong.
+
+  First, the root unit. 1rem is 20px, sized fluidly, which is what makes
+  every rem value in the spec (--br .2rem, --header-height 2.6rem) resolve
+  to the right pixels.
+
+  Second, the theme contract. --text-color and --background-color hold bare
+  HSL components with no hsl() wrapper, so consumers can write
+  hsla(var(--text-color) / .2) for a hairline. The named presets below sit
+  on top of that contract. They are a convenience, not the system: any
+  container can carry its own pair. This shop's default pair (signal red on
+  stone) is itself just one custom pair, not one of the five presets.
+
+  @example
+  {% render 'css-variables' %}
+{% enddoc %}
+
+{% style %}
+  {% # Brand typefaces, self-hosted under the studio's own font license %}
+  @font-face {
+    font-family: 'Grotesk';
+    src: url('{{ 'PPRightGrotesk-CompactBlack.woff2' | asset_url }}') format('woff2');
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'Montreal';
+    src: url('{{ 'PPNeueMontreal-Regular.woff2' | asset_url }}') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'Supply';
+    src: url('{{ 'PPSupplyMono-Light.woff2' | asset_url }}') format('woff2');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  :root {
+    {% # Chrome palette, bare components so alpha variants work %}
+    --color-white: 0 0% 100%;
+    --color-black: 0 0% 0%;
+    --color-grey: 0 0% 21%;
+    --color-beige: 49 14% 85%;
+    --color-red: 359 99% 61%;
+
+    --white: hsl(var(--color-white));
+    --black: hsl(var(--color-black));
+    --red: hsl(var(--color-red));
+
+    {% # Faces %}
+    --display: 'Grotesk', 'Impact', sans-serif;
+    --sans-serif: 'Montreal', sans-serif;
+    --mono: 'Supply', ui-monospace, monospace;
+    --font-weight: 400;
+
+    {% # Display sizing: a multiplier against one percent of usable grid width %}
+    --global-fs-mobile: 15;
+    --global-fs-desktop: 13.5;
+    --grid-vw: calc((100vw - var(--grid-margin) * 2) / 100);
+
+    {% # Type scale %}
+    --ts-h1-fs: calc(var(--grid-vw) * var(--global-fs-mobile));
+    --ts-h1-lh: 0.76;
+    --ts-h1-ls: -0.01em;
+
+    --ts-h2-fs: calc(var(--grid-vw) * var(--global-fs-mobile) * 0.55);
+    --ts-h2-lh: 1;
+    --ts-h2-ls: 0.02em;
+
+    --ts-body-xl-fs: 1.75rem;
+    --ts-body-xl-lh: 1.1;
+    --ts-body-xl-ls: 0.02em;
+
+    --ts-body-menu-fs: 1rem;
+    --ts-body-menu-lh: 1.4;
+    --ts-body-menu-ls: 0.02em;
+
+    --ts-body-l-fs: 0.9rem;
+    --ts-body-l-lh: 1.4;
+    --ts-body-l-ls: 0.02em;
+
+    --ts-body-s-fs: 0.7rem;
+    --ts-body-s-lh: 1.5;
+    --ts-body-s-ls: 0.02em;
+
+    --ts-label-m-fs: 0.6rem;
+    --ts-label-m-lh: 1.3;
+    --ts-label-m-ls: 0.01em;
+
+    --ts-label-s-fs: 0.5rem;
+    --ts-label-s-lh: 1.26;
+    --ts-label-s-ls: 0.01em;
+
+    --ts-cta-fs: 0.6rem;
+    --ts-cta-lh: 1.26;
+    --ts-cta-ls: 0.01em;
+
+    {% # Layout %}
+    --header-height: 2.6rem;
+    --grid-cols: 6;
+    --grid-margin: 1rem;
+    --grid-gap: 1rem;
+
+    {% # One column plus one gap, and one gap on its own %}
+    --gutter: var(--grid-gap);
+    --cols: calc(
+      (100vw - var(--grid-margin) * 2 + var(--grid-gap)) / var(--grid-cols)
+    );
+
+    {% # How far the bleed mask takes to fade out at the right edge %}
+    --bleed-fade: 12.5rem;
+
+    {% # Section rhythm %}
+    --section-s: 3rem;
+    --section-m: 5rem;
+    --section-l: 7.5rem;
+
+    {% # Surface %}
+    --br: 0.2rem;
+    --border-color: hsla(var(--text-color) / 0.2);
+    --detail-color: hsla(var(--text-color) / 0.3);
+
+    {% # Motion, circular eases only %}
+    --ease-out: cubic-bezier(0, 0.55, 0.45, 1);
+    --ease-in-out: cubic-bezier(0.85, 0, 0.15, 1);
+    --theme-transition-duration: 400ms;
+    --theme-transition-ease: var(--ease-out);
+    --theme-transition: var(--theme-transition-duration) var(--theme-transition-ease);
+  }
+
+  @media (min-width: 900px) {
+    :root {
+      --grid-cols: 12;
+      --grid-margin: 2.7rem;
+      --ts-h1-fs: calc(var(--grid-vw) * var(--global-fs-desktop));
+      --ts-h2-fs: calc(var(--grid-vw) * var(--global-fs-desktop) * 0.55);
+    }
+  }
+
+  {% # Theme presets. Any container can still set its own custom pair %}
+  .theme-light {
+    --text-color: 0 0% 0%;
+    --background-color: 0 0% 100%;
+  }
+
+  .theme-dark {
+    --text-color: 49 14% 85%;
+    --background-color: 0 0% 0%;
+  }
+
+  .theme-stone {
+    --text-color: 359 99% 61%;
+    --background-color: 49 14% 85%;
+  }
+
+  .theme-red {
+    --text-color: 49 14% 85%;
+    --background-color: 359 99% 61%;
+  }
+
+  .theme-grey {
+    --text-color: 0 0% 100%;
+    --background-color: 0 0% 21%;
+  }
+
+  {% # This shop's own default: signal red set on warm stone, not the system default %}
+  body {
+    --text-color: 359 99% 61%;
+    --background-color: 49 14% 85%;
+  }
+
+  {% # Anything carrying a pair paints itself and transitions between pairs %}
+  [class*='theme-'],
+  [style*='--text-color'],
+  body {
+    color: hsl(var(--text-color));
+    background-color: hsl(var(--background-color));
+    transition: color var(--theme-transition), background-color var(--theme-transition),
+      fill var(--theme-transition);
+  }
+{% endstyle %}

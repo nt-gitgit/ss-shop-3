@@ -1,0 +1,42 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "Spring/Summer Merch",
+    "theme_version": "1.0.0",
+    "theme_author": "Spring/Summer",
+    "theme_documentation_url": "https://springsummer.dk",
+    "theme_support_url": "https://springsummer.dk"
+  },
+  {
+    "name": "t:general.typography",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "t:general.fonts_info"
+      }
+    ]
+  },
+  {
+    "name": "t:general.favicon",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "favicon",
+        "label": "t:labels.favicon",
+        "info": "t:labels.favicon_info"
+      }
+    ]
+  },
+  {
+    "name": "t:general.commerce",
+    "settings": [
+      {
+        "type": "number",
+        "id": "free_shipping_threshold",
+        "label": "t:labels.free_shipping_threshold",
+        "info": "t:labels.free_shipping_threshold_info",
+        "default": 600
+      }
+    ]
+  }
+]

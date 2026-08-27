@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+  <head>
+    {% # Inlined CSS Variables %}
+    {% render 'css-variables' %}
+
+    {% comment %}
+      Preload the body font (most commonly rendered) for initial page render.
+      The display and mono faces load on-demand via @font-face.
+    {% endcomment %}
+    {{ 'PPNeueMontreal-Regular.woff2' | asset_url | preload_tag: as: 'font', type: 'font/woff2', crossorigin: 'anonymous' }}
+
+    {% # Load and preload the critical CSS %}
+    {{ 'critical.css' | asset_url | stylesheet_tag: preload: true }}
+
+    {% if settings.favicon != blank %}
+      <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
+      <link rel="apple-touch-icon" href="{{ settings.favicon | image_url: width: 180, height: 180 }}">
+    {% endif %}
+
+    {% # Social, title, etc. %}
+    {% render 'meta-tags' %}
+
+    {{ content_for_header }}
+  </head>
+
+  <body>
+    <script>
+      window.SS_ROUTES = {
+        cart: {{ routes.cart_url | json }},
+        cartAdd: {{ routes.cart_add_url | json }},
+        cartChange: {{ routes.cart_change_url | json }},
+        root: {{ routes.root_url | json }},
+        allProducts: {{ routes.all_products_collection_url | json }}
+      };
+      window.SS_MONEY_FORMAT = {{ shop.money_format | json }};
+    </script>
+
+    {% render 'ui-components' %}
+    {% render 'scroll-reveal' %}
+
+    <a class="skip-link ts-cta" href="#main-content">{{ 'general.accessibility.skip_to_content' | t }}</a>
+
+    {% sections 'header-group' %}
+
+    <main id="main-content" tabindex="-1">
+      {{ content_for_layout }}
+    </main>
+
+    {% sections 'footer-group' %}
+
+    {% section 'cart-drawer' %}
+
+    <script src="{{ 'cart.js' | asset_url }}" defer="defer"></script>
+    {% if template.name == 'product' %}
+      <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+    {% endif %}
+    {% if template.name == 'cart' %}
+      <script src="{{ 'cart-page.js' | asset_url }}" defer="defer"></script>
+    {% endif %}
+  </body>
+</html>

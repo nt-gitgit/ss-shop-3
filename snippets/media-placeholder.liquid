@@ -1,0 +1,42 @@
+{% doc %}
+  Stands in for a photograph that does not exist yet.
+
+  Flat tint from the current theme pair, a hairline, and one mono label.
+  No illustration and no silhouette, both because the system bans
+  decoration and because a generic grey product outline reads as broken
+  rather than as pending.
+
+  Pass the call site's own class so the existing geometry rules (aspect
+  ratio, absolute fill) still apply.
+
+  @param {string} [class] - The call site's placeholder class, for geometry
+  @param {string} [label] - Overrides the default label
+
+  @example
+  {% render 'media-placeholder', class: 'product-card__placeholder' %}
+{% enddoc %}
+
+<div class="media-placeholder {{ class }}" role="img" aria-label="{{ 'media.pending' | t }}">
+  <span class="trumpet media-placeholder__label">
+    {%- if label != blank -%}{{ label }}{%- else -%}{{ 'media.pending' | t }}{%- endif -%}
+  </span>
+</div>
+
+{% stylesheet %}
+  .media-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    padding: 0.6rem;
+    background-color: hsla(var(--text-color) / 0.06);
+    border: 1px solid var(--border-color);
+    border-radius: var(--br);
+    text-align: center;
+  }
+
+  .media-placeholder__label {
+    opacity: 0.55;
+  }
+{% endstylesheet %}

@@ -1,0 +1,337 @@
+{% doc %}
+  Shared primitives: the arrow link (the only CTA pattern), the icon chip,
+  trumpet labels, and shared state treatments.
+
+  Rendered once from the layout so these classes are in every page's render
+  tree whichever sections a page instantiates.
+
+  @example
+  {% render 'ui-components' %}
+{% enddoc %}
+
+{% stylesheet %}
+  /**
+   * Trumpet. The small mono eyebrow above almost every section.
+   */
+  .trumpet {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: var(--ts-label-s-fs);
+    line-height: var(--ts-label-s-lh);
+    letter-spacing: var(--ts-label-s-ls);
+    text-transform: uppercase;
+  }
+
+  .trumpet-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .trumpet-row__tick {
+    display: block;
+    width: 1.4rem;
+    height: 1px;
+    background: currentcolor;
+    opacity: 0.5;
+  }
+
+  .tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: var(--ts-label-s-fs);
+    line-height: var(--ts-label-s-lh);
+    letter-spacing: var(--ts-label-s-ls);
+    color: currentcolor;
+  }
+
+  .tag--chip {
+    padding: 4px 8px;
+    border-radius: var(--br);
+    border: 1px solid var(--detail-color);
+  }
+
+  /**
+   * Arrow link. Text plus an icon chip, with a 0.75px underline that grows
+   * from nothing over 500ms. Never a fill, never a pill.
+   *
+   * Below 900px the underline is permanently on, because there is no hover
+   * there to reveal it.
+   */
+  .arrow-link,
+  .button {
+    --line-size: 0%;
+    --border-icon-svg-color: hsl(var(--background-color));
+    --border-icon-background-color: hsl(var(--text-color));
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    width: fit-content;
+    max-width: 20rem;
+    text-decoration: none;
+    color: currentcolor;
+    font-family: var(--mono);
+    font-size: var(--ts-cta-fs);
+    line-height: var(--ts-cta-lh);
+    letter-spacing: var(--ts-cta-ls);
+    background: transparent;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    text-align: left;
+  }
+
+  .arrow-link:disabled,
+  .button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .link-title,
+  .button__label {
+    display: inline;
+    background: linear-gradient(hsla(var(--text-color)), hsla(var(--text-color))) 0 100% no-repeat;
+    background-size: var(--line-size) 0.75px;
+    transition: background-size 500ms var(--ease-out);
+  }
+
+  .arrow-link:hover:not(:disabled),
+  .arrow-link:focus-visible,
+  .button:hover:not(:disabled),
+  .button:focus-visible {
+    --line-size: 100%;
+  }
+
+  @media (max-width: 899px) {
+    .link-title,
+    .button__label {
+      --line-size: 100%;
+    }
+  }
+
+  /**
+   * Icon chip. 40px on mobile, 27px on desktop. Larger where a thumb has to
+   * find it, smaller where restraint reads.
+   */
+  .border-icon,
+  .button__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 2rem;
+    height: 2rem;
+    padding: 0.2rem;
+    border-radius: var(--br);
+    color: var(--border-icon-svg-color, hsl(var(--background-color)));
+    transition: background-color var(--theme-transition), transform 200ms var(--ease-out);
+  }
+
+  .border-icon.has-background,
+  .button__icon {
+    background-color: var(--border-icon-background-color, currentcolor);
+  }
+
+  .border-icon.has-border,
+  .button__icon.is-outlined {
+    border: 1px solid var(--detail-color);
+    background-color: transparent;
+    color: currentcolor;
+  }
+
+  .border-icon svg,
+  .button__icon svg {
+    width: 1.3em;
+    height: 1.3em;
+    fill: var(--fill, currentcolor);
+  }
+
+  .border-icon,
+  .button__icon {
+    font-size: 1rem;
+  }
+
+  @media (min-width: 900px) {
+    .border-icon,
+    .button__icon {
+      width: 1.35rem;
+      height: 1.35rem;
+      padding: 0.15rem;
+      font-size: 0.7rem;
+    }
+  }
+
+  .arrow-link:hover:not(:disabled) .button__icon,
+  .arrow-link:focus-visible .button__icon,
+  .button:hover:not(:disabled) .button__icon,
+  .button:focus-visible .button__icon,
+  .arrow-link:hover:not(:disabled) .border-icon,
+  .button:hover:not(:disabled) .border-icon {
+    transform: scale(1.2);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .link-title,
+    .button__label,
+    .border-icon,
+    .button__icon {
+      transition: none;
+    }
+
+    .arrow-link:hover .button__icon,
+    .button:hover .button__icon,
+    .arrow-link:hover .border-icon,
+    .button:hover .border-icon {
+      transform: none;
+    }
+  }
+
+  /**
+   * Sold out and similar states. A mono label in the trumpet register,
+   * never a coloured badge or a ribbon.
+   */
+  .state-label {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: var(--ts-label-s-fs);
+    line-height: var(--ts-label-s-lh);
+    letter-spacing: var(--ts-label-s-ls);
+    text-transform: uppercase;
+    opacity: 0.75;
+  }
+
+  /**
+   * Form errors. A text block below the field, matching the production
+   * newsletter pattern. Never a filled toast or a coloured banner.
+   */
+  .error-message {
+    display: block;
+    padding-top: 20px;
+    font-family: var(--mono);
+    font-size: var(--ts-label-m-fs);
+    line-height: var(--ts-label-m-lh);
+    color: currentcolor;
+  }
+
+  /**
+   * Inputs. The placeholder sits at full text colour rather than a muted
+   * grey, which is deliberate and pairs with the lowercase placeholder copy.
+   */
+  .field {
+    width: 100%;
+    padding: 8px 6px;
+    background: transparent;
+    color: currentcolor;
+    border: 1px solid var(--detail-color);
+    border-radius: var(--br);
+    font-family: var(--mono);
+    font-size: var(--ts-body-s-fs);
+  }
+
+  .field::placeholder {
+    color: hsla(var(--text-color));
+    opacity: 1;
+  }
+
+  /**
+   * Quantity stepper. Shared idiom between the cart drawer and cart page.
+   */
+  .quantity-selector {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid var(--detail-color);
+    border-radius: var(--br);
+    padding: 0.2rem;
+  }
+
+  .quantity-selector button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.4rem;
+    height: 1.4rem;
+    background: none;
+    border: 0;
+    color: currentcolor;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .quantity-selector button svg {
+    width: 0.7rem;
+    height: 0.7rem;
+  }
+
+  .quantity-selector input {
+    width: 1.6rem;
+    text-align: center;
+    background: transparent;
+    border: 0;
+    color: currentcolor;
+    font-family: var(--mono);
+    font-size: var(--ts-body-s-fs);
+    -moz-appearance: textfield;
+  }
+
+  .quantity-selector input::-webkit-outer-spin-button,
+  .quantity-selector input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .price {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+  }
+
+  .price__compare-at {
+    opacity: 0.55;
+    text-decoration: line-through;
+  }
+
+  /**
+   * The tick. A 1px vertical rule that grows under a link on hover and
+   * stands full height when active.
+   */
+  .tick-link {
+    position: relative;
+    text-decoration: none;
+    color: currentcolor;
+  }
+
+  .tick-link::after {
+    --scale-y: 0;
+    content: '';
+    position: absolute;
+    left: 0;
+    top: calc(100% + 0.6rem);
+    width: 1px;
+    height: 0.6rem;
+    background: var(--detail-color);
+    transform: scaleY(var(--scale-y));
+    transform-origin: bottom;
+    transition: transform 200ms var(--ease-out);
+  }
+
+  .tick-link:hover::after,
+  .tick-link:focus-visible::after {
+    --scale-y: 0.5;
+  }
+
+  @media (max-width: 899px) {
+    .tick-link::after {
+      display: none;
+    }
+  }
+
+  .hairline {
+    border: 1px solid var(--border-color);
+  }
+
+  .no-scroll {
+    overflow: hidden;
+  }
+{% endstylesheet %}

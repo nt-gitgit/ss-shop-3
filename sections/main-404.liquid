@@ -1,0 +1,38 @@
+{% comment %}
+  404 page: a big display headline and one way back.
+
+  @example
+  {% section 'main-404' %}
+{% endcomment %}
+
+<div class="not-found full-width" data-reveal>
+  <h1 class="ts-h1 not-found__heading">{{ 'general.404.title' | t }}</h1>
+  <p class="ts-body-l not-found__body">{{ 'general.404.not_found' | t }}</p>
+  <a href="{{ routes.root_url }}" class="arrow-link">
+    <span class="link-title ts-cta">{{ 'general.404.back_to_shopping' | t }}</span>
+    <span class="button__icon" aria-hidden="true">{{ 'icon-arrow.svg' | inline_asset_content }}</span>
+  </a>
+</div>
+
+{% stylesheet %}
+  .not-found {
+    padding: var(--section-l) var(--grid-margin);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+    min-height: 50vh;
+    justify-content: center;
+  }
+
+  .not-found__body {
+    opacity: 0.75;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.404",
+  "settings": []
+}
+{% endschema %}

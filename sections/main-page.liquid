@@ -1,0 +1,38 @@
+{% comment %}
+  Generic page template: a trumpet label, the page title, and its rich-text
+  body.
+
+  @example
+  {% section 'main-page' %}
+{% endcomment %}
+
+<div class="page full-width" data-reveal>
+  <div class="trumpet-row page__label">
+    <span class="trumpet-row__tick" aria-hidden="true"></span>
+    <span class="trumpet">{{ 'general.page' | t }}</span>
+  </div>
+  <h1 class="ts-h2 page__title">{{ page.title }}</h1>
+  <div class="ts-body-l page__content rich-text">{{ page.content }}</div>
+</div>
+
+{% stylesheet %}
+  .page {
+    padding: var(--section-s) var(--grid-margin) var(--section-l);
+    max-width: 46rem;
+  }
+
+  .page__label {
+    margin-bottom: 24px;
+  }
+
+  .page__title {
+    margin: 0 0 32px;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.page",
+  "settings": []
+}
+{% endschema %}

@@ -1,0 +1,168 @@
+{% comment %}
+  Studio note: a label column and a two-paragraph note with a small
+  made-by/questions row underneath, in the house's label-column-plus-copy
+  layout.
+
+  @example
+  {% section 'studio-note' %}
+{% endcomment %}
+
+<div id="studio" class="studio-note {{ section.settings.theme }} full-width" data-reveal>
+  <div class="studio-note__grid">
+    <div class="studio-note__label-col">
+      <div class="trumpet-row">
+        <span class="trumpet-row__tick" aria-hidden="true"></span>
+        <span class="trumpet">{{ section.settings.label }}</span>
+      </div>
+    </div>
+
+    <div class="studio-note__body-col">
+      {% if section.settings.statement != blank %}
+        <p class="ts-body-xl studio-note__statement">{{ section.settings.statement }}</p>
+      {% endif %}
+
+      {% if section.settings.body != blank %}
+        <div class="ts-body-l studio-note__body rich-text">{{ section.settings.body }}</div>
+      {% endif %}
+
+      {% if section.settings.made_by != blank or section.settings.email != blank %}
+        <div class="studio-note__facts">
+          {% if section.settings.made_by != blank %}
+            <div>
+              <div class="trumpet studio-note__fact-label">{{ 'general.made_by' | t }}</div>
+              <div class="ts-body-m">{{ section.settings.made_by }}</div>
+            </div>
+          {% endif %}
+          {% if section.settings.email != blank %}
+            <div>
+              <div class="trumpet studio-note__fact-label">{{ 'general.questions' | t }}</div>
+              <div class="ts-body-m">
+                <a href="mailto:{{ section.settings.email }}">{{ section.settings.email }}</a>
+                {% if section.settings.phone != blank %} &middot; {{ section.settings.phone }}{% endif %}
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .studio-note {
+    padding: var(--section-l) var(--grid-margin);
+  }
+
+  .studio-note__grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .studio-note__label-col {
+    grid-column: span 12;
+  }
+
+  .studio-note__body-col {
+    grid-column: span 12;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  @media (min-width: 900px) {
+    .studio-note__label-col {
+      grid-column: span 3;
+    }
+
+    .studio-note__body-col {
+      grid-column: span 8;
+    }
+  }
+
+  .studio-note__statement {
+    max-width: 30ch;
+    margin: 0;
+  }
+
+  .studio-note__body {
+    max-width: 52ch;
+    opacity: 0.75;
+  }
+
+  .studio-note__facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    border-top: 1px solid var(--border-color);
+    padding-top: 18px;
+  }
+
+  .studio-note__fact-label {
+    opacity: 0.55;
+    margin-bottom: 6px;
+  }
+
+  .studio-note__facts a {
+    color: currentcolor;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.studio_note",
+  "settings": [
+    {
+      "type": "select",
+      "id": "theme",
+      "label": "t:labels.theme",
+      "options": [
+        { "value": "theme-light", "label": "t:options.theme.light" },
+        { "value": "theme-dark", "label": "t:options.theme.dark" },
+        { "value": "theme-stone", "label": "t:options.theme.stone" },
+        { "value": "theme-red", "label": "t:options.theme.red" },
+        { "value": "theme-grey", "label": "t:options.theme.grey" },
+        { "value": "", "label": "t:options.theme.custom" }
+      ],
+      "default": ""
+    },
+    {
+      "type": "text",
+      "id": "label",
+      "label": "t:labels.text",
+      "default": "Studio note"
+    },
+    {
+      "type": "text",
+      "id": "statement",
+      "label": "t:labels.text",
+      "default": "We kept printing these for ourselves. People kept asking. So now there is a shop."
+    },
+    {
+      "type": "richtext",
+      "id": "body",
+      "label": "t:labels.body",
+      "default": "<p>Everything here started as an internal joke or an internal need — a warm hoodie for a cold studio, a bag for carrying laptops across Nikolaj Plads, a sheet of stickers for the back of them. It is printed in small runs by people we know, packed by whoever is nearest the door, and restocked when we remember. If it sells out, that is honestly the most likely outcome.</p>"
+    },
+    {
+      "type": "text",
+      "id": "made_by",
+      "label": "t:labels.text",
+      "default": "A small team, over a decade, 300+ projects and now six garments"
+    },
+    {
+      "type": "text",
+      "id": "email",
+      "label": "t:labels.email",
+      "default": "contact@springsummer.dk"
+    },
+    {
+      "type": "text",
+      "id": "phone",
+      "label": "t:labels.phone",
+      "default": "+45 32 16 22 22"
+    }
+  ],
+  "presets": [{ "name": "t:general.studio_note" }]
+}
+{% endschema %}

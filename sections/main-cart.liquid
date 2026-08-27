@@ -1,0 +1,142 @@
+{% comment %}
+  The full cart page. Shares snippets/cart-line-item.liquid with the
+  drawer; assets/cart-page.js wires the same quantity/remove interactions
+  but reloads the page after each change instead of doing a section-render
+  swap, since the page already is the full cart render.
+
+  @example
+  {% section 'main-cart' %}
+{% endcomment %}
+
+<div class="cart-page full-width" data-reveal>
+  <div class="trumpet-row cart-page__label">
+    <span class="trumpet-row__tick" aria-hidden="true"></span>
+    <span class="trumpet">{{ 'cart.title' | t }}</span>
+  </div>
+
+  {% if cart.item_count > 0 %}
+    <div class="cart-page__grid">
+      <div class="cart-page__lines" data-cart-page-lines>
+        {% for item in cart.items %}
+          {% render 'cart-line-item', item: item %}
+        {% endfor %}
+      </div>
+
+      <div class="cart-page__summary">
+        {% liquid
+          assign threshold_cents = settings.free_shipping_threshold | times: 100
+          assign remaining_cents = threshold_cents | minus: cart.total_price
+          assign remaining_money = remaining_cents | money
+        %}
+        {% if threshold_cents > 0 %}
+          <p class="ts-body-s cart-page__shipping-note">
+            {% if remaining_cents > 0 %}
+              {{ 'cart.free_shipping_remaining_html' | t: amount: remaining_money }}
+            {% else %}
+              {{ 'cart.free_shipping_unlocked' | t }}
+            {% endif %}
+          </p>
+        {% endif %}
+
+        <div class="cart-page__subtotal">
+          <span class="ts-body-l">{{ 'cart.subtotal' | t }}</span>
+          <span class="ts-body-l ff-mono">{{ cart.total_price | money }}</span>
+        </div>
+        <p class="ts-body-s cart-page__tax-note">{{ 'cart.taxes_shipping_note' | t }}</p>
+
+        <form action="{{ routes.cart_url }}" method="post">
+          <button type="submit" name="checkout" class="arrow-link cart-page__checkout">
+            <span class="link-title ts-cta">{{ 'shop.pay_now' | t }}</span>
+            <span class="button__icon" aria-hidden="true">{{ 'icon-arrow.svg' | inline_asset_content }}</span>
+          </button>
+        </form>
+      </div>
+    </div>
+  {% else %}
+    <div class="cart-page__empty">
+      <p class="ts-body-xl">{{ 'cart.empty_html' | t }}</p>
+      <a class="arrow-link" href="{{ routes.all_products_collection_url }}">
+        <span class="link-title ts-cta">{{ 'cart.browse_collection' | t }}</span>
+        <span class="button__icon" aria-hidden="true">{{ 'icon-arrow.svg' | inline_asset_content }}</span>
+      </a>
+    </div>
+  {% endif %}
+</div>
+
+{% stylesheet %}
+  .cart-page {
+    padding: var(--section-s) var(--grid-margin) var(--section-l);
+  }
+
+  .cart-page__label {
+    margin-bottom: 32px;
+  }
+
+  .cart-page__grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 40px;
+  }
+
+  .cart-page__lines {
+    grid-column: span 12;
+  }
+
+  .cart-page__summary {
+    grid-column: span 12;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-self: start;
+  }
+
+  @media (min-width: 900px) {
+    .cart-page__lines {
+      grid-column: span 8;
+    }
+
+    .cart-page__summary {
+      grid-column: span 4;
+      border-left: 1px solid var(--border-color);
+      padding-left: 40px;
+    }
+  }
+
+  .cart-page__shipping-note {
+    opacity: 0.6;
+  }
+
+  .cart-page__subtotal {
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid var(--border-color);
+    padding-top: 12px;
+  }
+
+  .cart-page__tax-note {
+    opacity: 0.55;
+  }
+
+  .cart-page__checkout {
+    width: 100%;
+    justify-content: center;
+    padding: 0.9rem;
+    border: 1px solid currentcolor;
+    border-radius: var(--br);
+    max-width: none;
+    margin-top: 8px;
+  }
+
+  .cart-page__empty {
+    display: grid;
+    gap: 1.4rem;
+    padding-block: var(--section-s);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.cart",
+  "settings": []
+}
+{% endschema %}

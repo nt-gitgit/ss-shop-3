@@ -1,0 +1,10 @@
+{
+  "type": "header",
+  "name": "t:general.header",
+  "sections": {
+    "header": {
+      "type": "header"
+    }
+  },
+  "order": ["header"]
+}

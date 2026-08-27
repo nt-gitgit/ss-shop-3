@@ -1,0 +1,634 @@
+{% comment %}
+  Black Friday countdown banner.
+
+  Built on the same countdown mechanism used elsewhere in the agency's
+  Shopify builds: the section escalates its own theme pair as the deadline
+  approaches (far out it sits quiet, inside the last day it goes dark, in
+  the final hour it turns signal red), digits wipe downward over 200ms as
+  they change, and a server-side render means the digits are never blank
+  before JavaScript corrects and drives them.
+
+  Two things this version adds on top of that mechanism: a confetti canvas
+  that bursts once the section scrolls into view (colours read live off the
+  section's own theme pair, so a burst during the "final" stage comes out
+  in that stage's colours, not hardcoded ones), and a native Shopify
+  customer-signup form in place of a plain CTA link, so "notify me" creates
+  a real, marketing-consented customer record.
+{% endcomment %}
+
+{% liquid
+  assign target = section.settings.deadline | date: '%s' | plus: 0
+  assign right_now = 'now' | date: '%s' | plus: 0
+  assign remaining = target | minus: right_now
+  if remaining < 0
+    assign remaining = 0
+  endif
+
+  assign d = remaining | divided_by: 86400
+  assign r1 = remaining | modulo: 86400
+  assign h = r1 | divided_by: 3600
+  assign r2 = r1 | modulo: 3600
+  assign m = r2 | divided_by: 60
+  assign s = r2 | modulo: 60
+
+  assign dd = d | prepend: '0' | slice: -2, 2
+  assign hh = h | prepend: '0' | slice: -2, 2
+  assign mm = m | prepend: '0' | slice: -2, 2
+  assign ss = s | prepend: '0' | slice: -2, 2
+
+  assign has_ended = false
+  if remaining <= 0
+    assign has_ended = true
+  endif
+%}
+
+<div
+  class="countdown {{ section.settings.theme_far }} full-width"
+  data-countdown
+  data-deadline="{{ section.settings.deadline }}"
+  data-theme-far="{{ section.settings.theme_far }}"
+  data-theme-soon="{{ section.settings.theme_soon }}"
+  data-theme-final="{{ section.settings.theme_final }}"
+  data-soon-hours="{{ section.settings.soon_hours }}"
+  data-final-minutes="{{ section.settings.final_minutes }}"
+  data-escalate="{{ section.settings.escalate }}"
+  data-confetti="{{ section.settings.show_confetti }}"
+  style="--countdown-fs-multiplier: {{ section.settings.size }}"
+>
+  <canvas class="countdown__confetti" data-countdown-confetti aria-hidden="true"></canvas>
+
+  <div class="countdown__inner">
+    {% if section.settings.label != blank %}
+      <span class="trumpet-row countdown__label">
+        <span class="trumpet-row__tick" aria-hidden="true"></span>
+        <span class="trumpet">{{ section.settings.label }}</span>
+        <span class="trumpet-row__tick" aria-hidden="true"></span>
+      </span>
+    {% endif %}
+
+    <h2 class="ts-h1 countdown__heading">{{ section.settings.heading }}</h2>
+
+    <div class="countdown__clock" data-countdown-clock {% if has_ended %}hidden{% endif %}>
+      <div class="countdown__units" aria-hidden="true">
+        <span class="countdown__unit">
+          <span class="countdown__digits" data-unit="days">{{ dd }}</span>
+          <span class="trumpet countdown__unit-label">{{ 'countdown.days' | t }}</span>
+        </span>
+        <span class="countdown__sep" aria-hidden="true">:</span>
+        <span class="countdown__unit">
+          <span class="countdown__digits" data-unit="hours">{{ hh }}</span>
+          <span class="trumpet countdown__unit-label">{{ 'countdown.hours' | t }}</span>
+        </span>
+        <span class="countdown__sep" aria-hidden="true">:</span>
+        <span class="countdown__unit">
+          <span class="countdown__digits" data-unit="minutes">{{ mm }}</span>
+          <span class="trumpet countdown__unit-label">{{ 'countdown.minutes' | t }}</span>
+        </span>
+        <span class="countdown__sep" aria-hidden="true">:</span>
+        <span class="countdown__unit">
+          <span class="countdown__digits" data-unit="seconds">{{ ss }}</span>
+          <span class="trumpet countdown__unit-label">{{ 'countdown.seconds' | t }}</span>
+        </span>
+      </div>
+
+      {% comment %} Screen readers get a coarse summary rather than a value that changes every second. {% endcomment %}
+      <p class="visually-hidden" role="timer" aria-live="polite" data-countdown-readout></p>
+    </div>
+
+    {% if section.settings.ended_text != blank %}
+      <p class="ts-body-xl countdown__ended" data-countdown-ended {% unless has_ended %}hidden{% endunless %}>
+        {{ section.settings.ended_text }}
+      </p>
+    {% endif %}
+
+    <div class="countdown__bottom">
+      {% if section.settings.body != blank %}
+        <p class="ts-body-l countdown__body">{{ section.settings.body }}</p>
+      {% endif %}
+
+      {% if section.settings.show_notify_form %}
+        <div class="countdown__notify">
+          {% form 'customer', id: 'black-friday-notify-form', class: 'countdown__notify-form' %}
+            <input type="hidden" name="contact[tags]" value="newsletter,black-friday">
+            {% if form.posted_successfully? %}
+              <p class="ts-label-s">{{ 'countdown.notify_success' | t }}</p>
+            {% else %}
+              <div class="countdown__notify-row">
+                <input
+                  type="email"
+                  name="contact[email]"
+                  class="countdown__notify-input"
+                  placeholder="{{ 'newsletter.email_label' | t }}"
+                  required
+                >
+                <button type="submit" class="countdown__notify-submit ts-cta">{{ 'countdown.notify_submit' | t }}</button>
+              </div>
+            {% endif %}
+          {% endform %}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="ss-bracket is-up countdown__bracket" aria-hidden="true"></div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .countdown {
+    position: relative;
+    padding-block: var(--section-m);
+    overflow: hidden;
+    text-align: center;
+  }
+
+  .countdown__confetti {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .countdown__inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.6rem;
+    max-width: 44rem;
+    margin: 0 auto;
+    padding-inline: var(--grid-margin);
+  }
+
+  .countdown__label {
+    justify-content: center;
+  }
+
+  .countdown__heading {
+    margin: 0;
+  }
+
+  .countdown__units {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0.25rem;
+  }
+
+  .countdown__unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /*
+   * Same sizing mechanism as the display headline: a multiplier against one
+   * percent of the usable grid width, so it scales with the grid rather
+   * than the raw viewport.
+   */
+  .countdown__digits {
+    font-family: var(--display);
+    font-size: calc(var(--grid-vw) * var(--countdown-fs-multiplier, 8));
+    line-height: var(--ts-h1-lh);
+    letter-spacing: var(--ts-h1-ls);
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum' 1;
+    display: block;
+  }
+
+  .countdown__sep {
+    font-family: var(--display);
+    font-size: calc(var(--grid-vw) * var(--countdown-fs-multiplier, 8));
+    line-height: var(--ts-h1-lh);
+    font-weight: 900;
+    opacity: 0.3;
+    align-self: flex-start;
+  }
+
+  .countdown__unit-label {
+    margin-top: 0.3rem;
+    opacity: 0.6;
+  }
+
+  /* A downward wipe as a digit changes. No flip, no bounce. */
+  .countdown__digits.is-ticking {
+    animation: countdown-tick 200ms var(--ease-out);
+  }
+
+  @keyframes countdown-tick {
+    from {
+      clip-path: inset(0 0 100% 0);
+      opacity: 0.35;
+    }
+    to {
+      clip-path: inset(0 0 0 0);
+      opacity: 1;
+    }
+  }
+
+  .countdown__ended {
+    margin: 0;
+    max-width: 34ch;
+  }
+
+  .countdown__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    width: 100%;
+    padding-top: 1.6rem;
+    border-top: 1px solid var(--border-color);
+    text-align: left;
+  }
+
+  .countdown__body {
+    margin: 0;
+    max-width: 46ch;
+    opacity: 0.85;
+  }
+
+  .countdown__notify {
+    min-width: 16rem;
+  }
+
+  .countdown__notify-row {
+    display: flex;
+    gap: 8px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 8px;
+  }
+
+  .countdown__notify-input {
+    flex: 1;
+    border: 0;
+    background: transparent;
+    color: currentcolor;
+    font-family: var(--sans-serif);
+    font-size: 0.85rem;
+    outline: none;
+  }
+
+  .countdown__notify-submit {
+    background: transparent;
+    border: 0;
+    color: currentcolor;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .countdown__bracket {
+    width: 100%;
+    margin-top: var(--section-s);
+  }
+
+  @media (max-width: 899px) {
+    .countdown__units {
+      gap: 0.15rem;
+    }
+
+    .countdown__unit-label {
+      font-size: 0.4rem;
+    }
+
+    .countdown__bottom {
+      text-align: center;
+      justify-content: center;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .countdown__digits.is-ticking {
+      animation: none;
+    }
+
+    .countdown {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  (function () {
+    var root = document.querySelector('[data-countdown]');
+    if (!root) return;
+
+    var deadline = Date.parse(root.dataset.deadline);
+    if (isNaN(deadline)) return;
+
+    var clock = root.querySelector('[data-countdown-clock]');
+    var ended = root.querySelector('[data-countdown-ended]');
+    var readout = root.querySelector('[data-countdown-readout]');
+    var units = {
+      days: root.querySelector('[data-unit="days"]'),
+      hours: root.querySelector('[data-unit="hours"]'),
+      minutes: root.querySelector('[data-unit="minutes"]'),
+      seconds: root.querySelector('[data-unit="seconds"]')
+    };
+
+    var themes = {
+      far: root.dataset.themeFar,
+      soon: root.dataset.themeSoon,
+      final: root.dataset.themeFinal
+    };
+    var escalate = root.dataset.escalate === 'true';
+    var soonMs = (Number(root.dataset.soonHours) || 24) * 3600000;
+    var finalMs = (Number(root.dataset.finalMinutes) || 60) * 60000;
+
+    var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    var stage = null;
+    var lastReadoutMinute = null;
+    var finished = false;
+
+    function pad(n) {
+      return n < 10 ? '0' + n : String(n);
+    }
+
+    function setDigits(el, value) {
+      if (!el || el.textContent === value) return;
+      el.textContent = value;
+      if (reduced) return;
+      el.classList.remove('is-ticking');
+      void el.offsetWidth;
+      el.classList.add('is-ticking');
+    }
+
+    function setStage(next) {
+      if (!escalate || stage === next) return;
+      [themes.far, themes.soon, themes.final].forEach(function (cls) {
+        if (cls) root.classList.remove(cls);
+      });
+      if (themes[next]) root.classList.add(themes[next]);
+      stage = next;
+    }
+
+    function finish() {
+      if (finished) return;
+      finished = true;
+      if (clock) clock.hidden = true;
+      if (ended) ended.hidden = false;
+      if (readout) readout.textContent = ended ? ended.textContent.trim() : '';
+    }
+
+    function update() {
+      var left = deadline - Date.now();
+
+      if (left <= 0) {
+        setStage('final');
+        finish();
+        return;
+      }
+
+      if (left <= finalMs) setStage('final');
+      else if (left <= soonMs) setStage('soon');
+      else setStage('far');
+
+      var totalSeconds = Math.floor(left / 1000);
+      var days = Math.floor(totalSeconds / 86400);
+      var hours = Math.floor((totalSeconds % 86400) / 3600);
+      var minutes = Math.floor((totalSeconds % 3600) / 60);
+      var seconds = totalSeconds % 60;
+
+      setDigits(units.days, pad(days));
+      setDigits(units.hours, pad(hours));
+      setDigits(units.minutes, pad(minutes));
+      setDigits(units.seconds, pad(seconds));
+
+      if (readout && minutes !== lastReadoutMinute) {
+        lastReadoutMinute = minutes;
+        readout.textContent = days + ' days, ' + hours + ' hours and ' + minutes + ' minutes remaining';
+      }
+    }
+
+    update();
+    setInterval(update, 1000);
+
+    // Confetti. Reads its colours live off the section's own theme pair, so
+    // a burst during the "final" stage comes out in that stage's colours
+    // rather than a hardcoded set. Bursts once each time the section
+    // scrolls into view.
+    if (root.dataset.confetti === 'true' && !reduced && 'IntersectionObserver' in window) {
+      var canvas = root.querySelector('[data-countdown-confetti]');
+      if (canvas) {
+        var ctx = canvas.getContext('2d');
+        var playing = false;
+        var raf = null;
+
+        function resize() {
+          canvas.width = root.clientWidth;
+          canvas.height = root.clientHeight;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        function confettiColors() {
+          var styles = getComputedStyle(root);
+          var text = styles.getPropertyValue('--text-color').trim();
+          var bg = styles.getPropertyValue('--background-color').trim();
+          return ['hsl(' + text + ')', 'hsl(' + bg + ')', 'hsla(' + text + ' / .6)'];
+        }
+
+        function play() {
+          if (playing) return;
+          playing = true;
+          var colors = confettiColors();
+          var w = canvas.width;
+          var h = canvas.height;
+          var particles = [];
+          for (var i = 0; i < 70; i++) {
+            particles.push({
+              x: Math.random() * w,
+              y: -20 - Math.random() * h * 0.4,
+              vx: (Math.random() - 0.5) * 1.6,
+              vy: 1.6 + Math.random() * 2.4,
+              size: 4 + Math.random() * 5,
+              rot: Math.random() * Math.PI * 2,
+              vr: (Math.random() - 0.5) * 0.2,
+              color: colors[Math.floor(Math.random() * colors.length)],
+              life: 0,
+              maxLife: 220 + Math.random() * 80
+            });
+          }
+
+          function step() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            var alive = false;
+            particles.forEach(function (p) {
+              p.x += p.vx;
+              p.y += p.vy;
+              p.rot += p.vr;
+              p.life++;
+              if (p.life < p.maxLife && p.y < canvas.height + 20) {
+                alive = true;
+                var fade = Math.max(0, 1 - p.life / p.maxLife);
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate(p.rot);
+                ctx.globalAlpha = fade;
+                ctx.fillStyle = p.color;
+                ctx.fillRect(-p.size / 2, -p.size / 3, p.size, p.size * 0.6);
+                ctx.restore();
+              }
+            });
+            if (alive) {
+              raf = requestAnimationFrame(step);
+            } else {
+              playing = false;
+              ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+          }
+
+          cancelAnimationFrame(raf);
+          raf = requestAnimationFrame(step);
+        }
+
+        var observer = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting) play();
+            });
+          },
+          { threshold: 0.35 }
+        );
+        observer.observe(root);
+      }
+    }
+  })();
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:general.black_friday",
+  "settings": [
+    {
+      "type": "text",
+      "id": "label",
+      "label": "t:labels.text",
+      "default": "Black Friday — details soon"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:labels.heading",
+      "default": "Black Friday"
+    },
+    {
+      "type": "text",
+      "id": "deadline",
+      "label": "t:labels.deadline",
+      "info": "t:labels.deadline_info",
+      "default": "2026-11-27T00:00:00+01:00"
+    },
+    {
+      "type": "textarea",
+      "id": "body",
+      "label": "t:labels.subheading",
+      "default": "We're doing something to the whole drop for one weekend. Haven't worked out exactly how much yet — ask again closer to the date."
+    },
+    {
+      "type": "text",
+      "id": "ended_text",
+      "label": "t:labels.ended_text",
+      "default": "It's Black Friday. Go on then."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_notify_form",
+      "label": "t:labels.show_notify_form",
+      "info": "t:labels.show_notify_form_info",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_confetti",
+      "label": "t:labels.show_confetti",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "size",
+      "label": "t:labels.digit_size",
+      "info": "t:labels.digit_size_info",
+      "min": 4,
+      "max": 16,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "t:general.escalation"
+    },
+    {
+      "type": "checkbox",
+      "id": "escalate",
+      "label": "t:labels.escalate",
+      "info": "t:labels.escalate_info",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "theme_far",
+      "label": "t:labels.theme_far",
+      "options": [
+        { "value": "theme-light", "label": "t:options.theme.light" },
+        { "value": "theme-dark", "label": "t:options.theme.dark" },
+        { "value": "theme-stone", "label": "t:options.theme.stone" },
+        { "value": "theme-red", "label": "t:options.theme.red" },
+        { "value": "theme-grey", "label": "t:options.theme.grey" }
+      ],
+      "default": "theme-red"
+    },
+    {
+      "type": "select",
+      "id": "theme_soon",
+      "label": "t:labels.theme_soon",
+      "options": [
+        { "value": "theme-light", "label": "t:options.theme.light" },
+        { "value": "theme-dark", "label": "t:options.theme.dark" },
+        { "value": "theme-stone", "label": "t:options.theme.stone" },
+        { "value": "theme-red", "label": "t:options.theme.red" },
+        { "value": "theme-grey", "label": "t:options.theme.grey" }
+      ],
+      "default": "theme-dark"
+    },
+    {
+      "type": "select",
+      "id": "theme_final",
+      "label": "t:labels.theme_final",
+      "options": [
+        { "value": "theme-light", "label": "t:options.theme.light" },
+        { "value": "theme-dark", "label": "t:options.theme.dark" },
+        { "value": "theme-stone", "label": "t:options.theme.stone" },
+        { "value": "theme-red", "label": "t:options.theme.red" },
+        { "value": "theme-grey", "label": "t:options.theme.grey" }
+      ],
+      "default": "theme-red"
+    },
+    {
+      "type": "range",
+      "id": "soon_hours",
+      "label": "t:labels.soon_hours",
+      "min": 1,
+      "max": 72,
+      "step": 1,
+      "unit": "h",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "final_minutes",
+      "label": "t:labels.final_minutes",
+      "min": 5,
+      "max": 240,
+      "step": 5,
+      "default": 60
+    }
+  ],
+  "presets": [{ "name": "t:general.black_friday" }]
+}
+{% endschema %}

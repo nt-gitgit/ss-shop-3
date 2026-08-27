@@ -1,0 +1,8 @@
+{
+  "current": "Default",
+  "presets": {
+    "Default": {
+      "free_shipping_threshold": 600
+    }
+  }
+}

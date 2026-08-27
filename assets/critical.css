@@ -1,0 +1,326 @@
+/** Critical CSS. Loaded on every page. */
+
+/**
+ * The root unit. 1rem is 20px, sized fluidly so it grows with the viewport
+ * rather than snapping at a breakpoint. Every rem token in the system is
+ * written against this.
+ */
+html {
+  font-size: max(18px, calc(8px + 0.83333vw));
+  -webkit-text-size-adjust: 100%;
+}
+
+/**
+ * Cross-document transitions. A progressive enhancement: browsers without
+ * it just navigate.
+ */
+@view-transition {
+  navigation: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @view-transition {
+    navigation: none;
+  }
+}
+
+/* Reset, after https://www.joshwcomeau.com/css/custom-css-reset/ */
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+/**
+ * The shell uses svh so it does not jump when mobile browser chrome hides.
+ * Overlays use dvh, so they fill what is actually visible.
+ */
+body {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  min-height: 100svh;
+  font-family: var(--sans-serif);
+  font-size: var(--ts-body-l-fs);
+  line-height: var(--ts-body-l-lh);
+  letter-spacing: var(--ts-body-l-ls);
+  font-weight: var(--font-weight);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+main {
+  flex-grow: 1;
+}
+
+html:has(dialog[scroll-lock][open], details[scroll-lock][open]),
+html.no-scroll {
+  overflow: hidden;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+input,
+textarea,
+select {
+  font: inherit;
+  border-radius: var(--br);
+}
+
+select {
+  background-color: hsl(var(--background-color));
+  color: currentcolor;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+
+p:empty {
+  display: none;
+}
+
+:is(p, h1, h2, h3, h4, h5, h6):first-child {
+  margin-block-start: 0;
+}
+
+:is(p, h1, h2, h3, h4, h5, h6):last-child {
+  margin-block-end: 0;
+}
+
+/**
+ * Focus. The source has rich hover states and no visible focus treatment,
+ * which is a gap rather than a style. This uses the system's own detail
+ * hairline instead of a browser default ring.
+ */
+:focus-visible {
+  outline: 1px solid hsla(var(--text-color) / 0.3);
+  outline-offset: 2px;
+  border-radius: var(--br);
+}
+
+/**
+ * Type scale.
+ *
+ * Display scale is a per-page decision, not something an h1 gets
+ * automatically. Headings inherit the body face until a ts- class says
+ * otherwise.
+ */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+}
+
+.ts-h1 {
+  font-family: var(--display);
+  font-size: var(--ts-h1-fs);
+  line-height: var(--ts-h1-lh);
+  letter-spacing: var(--ts-h1-ls);
+  text-transform: uppercase;
+  font-weight: 900;
+}
+
+.ts-h2 {
+  font-family: var(--display);
+  font-size: var(--ts-h2-fs);
+  line-height: var(--ts-h2-lh);
+  letter-spacing: var(--ts-h2-ls);
+  text-transform: uppercase;
+  font-weight: 900;
+}
+
+.ts-body-xl {
+  font-size: var(--ts-body-xl-fs);
+  line-height: var(--ts-body-xl-lh);
+  letter-spacing: var(--ts-body-xl-ls);
+}
+
+.ts-body-menu {
+  font-size: var(--ts-body-menu-fs);
+  line-height: var(--ts-body-menu-lh);
+  letter-spacing: var(--ts-body-menu-ls);
+}
+
+.ts-body-l {
+  font-size: var(--ts-body-l-fs);
+  line-height: var(--ts-body-l-lh);
+  letter-spacing: var(--ts-body-l-ls);
+}
+
+.ts-body-s {
+  font-size: var(--ts-body-s-fs);
+  line-height: var(--ts-body-s-lh);
+  letter-spacing: var(--ts-body-s-ls);
+}
+
+.ts-label-m {
+  font-family: var(--mono);
+  font-size: var(--ts-label-m-fs);
+  line-height: var(--ts-label-m-lh);
+  letter-spacing: var(--ts-label-m-ls);
+  text-transform: uppercase;
+}
+
+.ts-label-s {
+  font-family: var(--mono);
+  font-size: var(--ts-label-s-fs);
+  line-height: var(--ts-label-s-lh);
+  letter-spacing: var(--ts-label-s-ls);
+  text-transform: uppercase;
+}
+
+.ts-cta {
+  font-family: var(--mono);
+  font-size: var(--ts-cta-fs);
+  line-height: var(--ts-cta-lh);
+  letter-spacing: var(--ts-cta-ls);
+}
+
+.ff-mono {
+  font-family: var(--mono);
+}
+
+strong,
+b {
+  --font-weight: 600;
+  font-weight: var(--font-weight);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: fixed;
+  top: -100%;
+  left: 1rem;
+  z-index: 999;
+  padding: 0.6rem 1rem;
+  background: hsl(var(--background-color));
+  color: hsl(var(--text-color));
+  border: 1px solid var(--border-color);
+  border-radius: var(--br);
+}
+
+.skip-link:focus {
+  top: 1rem;
+}
+
+/**
+ * Rich text. Editor line breaks are honoured literally, subheads sit at 75%
+ * opacity rather than changing size.
+ */
+.rich-text * {
+  white-space: pre-line;
+}
+
+.rich-text > :not(:first-child) {
+  margin-top: 1em;
+}
+
+.rich-text a {
+  color: currentcolor;
+}
+
+/** Layout: grid and columns */
+
+.shopify-section {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--grid-margin) 1fr;
+  width: 100%;
+}
+
+.shopify-section > * {
+  grid-column: 2;
+}
+
+.shopify-section > .full-width {
+  grid-column: 1 / -1;
+}
+
+.ss-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr));
+  gap: var(--grid-gap);
+}
+
+@media (min-width: 900px) {
+  .ss-span-1 { grid-column: span 1; }
+  .ss-span-2 { grid-column: span 2; }
+  .ss-span-3 { grid-column: span 3; }
+  .ss-span-4 { grid-column: span 4; }
+  .ss-span-5 { grid-column: span 5; }
+  .ss-span-6 { grid-column: span 6; }
+  .ss-span-7 { grid-column: span 7; }
+  .ss-span-8 { grid-column: span 8; }
+  .ss-span-9 { grid-column: span 9; }
+  .ss-span-10 { grid-column: span 10; }
+  .ss-span-11 { grid-column: span 11; }
+  .ss-span-12 { grid-column: span 12; }
+}
+
+@media (max-width: 899px) {
+  .ss-span-m-1 { grid-column: span 1; }
+  .ss-span-m-2 { grid-column: span 2; }
+  .ss-span-m-3 { grid-column: span 3; }
+  .ss-span-m-4 { grid-column: span 4; }
+  .ss-span-m-5 { grid-column: span 5; }
+  .ss-span-m-6 { grid-column: span 6; }
+
+  [class*='ss-span-']:not([class*='ss-span-m-']) {
+    grid-column: 1 / -1;
+  }
+}
+
+/**
+ * Bracket. A rounded rectangle with half of it masked away, leaving a tab
+ * that marks the grid extent. Down-tab under the header, up-tab above the
+ * footer.
+ */
+.ss-bracket {
+  height: 1.2rem;
+  border: 1px solid var(--detail-color);
+  border-radius: var(--br);
+  -webkit-mask-image: linear-gradient(#000 50%, transparent 0);
+  mask-image: linear-gradient(#000 50%, transparent 0);
+  pointer-events: none;
+}
+
+.ss-bracket.is-up {
+  -webkit-mask-image: linear-gradient(transparent 50%, #000 0);
+  mask-image: linear-gradient(transparent 50%, #000 0);
+}

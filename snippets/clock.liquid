@@ -1,0 +1,129 @@
+{% doc %}
+  Renders the analog clock: an eleven pixel circle with three hands that
+  updates every second in the visitor's local time, or a fixed IANA zone.
+  Used beside "Copenhagen" in the header and again in the footer byline,
+  same idiom, two placements. Safe to render more than once per page.
+
+  @param {string} [timezone] - IANA timezone identifier. Leave blank for the visitor's local time.
+  @param {string} [class] - Extra class on the wrapping element
+  @param {boolean} [show_readout] - Show the digital HH:MM readout in mono, instead of keeping it screen-reader only
+
+  @example
+  {% render 'clock', timezone: 'Europe/Copenhagen' %}
+  {% render 'clock', timezone: 'Europe/Copenhagen', show_readout: true %}
+{% enddoc %}
+
+<span class="clock {{ class }}" data-live-clock {% if timezone != blank %}data-timezone="{{ timezone }}"{% endif %}>
+  <span class="analog-clock" data-analog-clock aria-hidden="true">
+    <span class="hand hour" data-hand-hour></span>
+    <span class="hand minute" data-hand-minute></span>
+    <span class="hand second" data-hand-second></span>
+  </span>
+  <span class="{% if show_readout %}clock__readout ff-mono{% else %}visually-hidden{% endif %}" data-clock-time></span>
+</span>
+
+{% stylesheet %}
+  .clock {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .analog-clock {
+    --clock-size: 11px;
+    --border-width: calc(var(--clock-size) / 7.5);
+    position: relative;
+    display: block;
+    box-sizing: content-box;
+    width: var(--clock-size);
+    height: var(--clock-size);
+    border: var(--border-width) solid;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .analog-clock .hand {
+    position: absolute;
+    bottom: 50%;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    transform-origin: 50% 100%;
+  }
+
+  .analog-clock .hand::after {
+    content: '';
+    width: 1px;
+    background: currentcolor;
+    border-radius: 20px;
+    margin-bottom: calc(var(--border-width) / 2 * -1);
+  }
+
+  .analog-clock .hour::after { height: 40%; }
+  .analog-clock .minute::after { height: 45%; }
+  .analog-clock .second::after { height: 50%; background: #d00; }
+
+  .clock__readout {
+    font-size: var(--ts-label-m-fs);
+    letter-spacing: var(--ts-label-m-ls);
+    white-space: nowrap;
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  (function () {
+    var clocks = document.querySelectorAll('[data-live-clock]');
+    if (!clocks.length) return;
+
+    function partsNow(timeZone) {
+      var opts = { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false };
+      if (timeZone) opts.timeZone = timeZone;
+      var fmt;
+      try {
+        fmt = new Intl.DateTimeFormat([], opts);
+      } catch (error) {
+        delete opts.timeZone;
+        fmt = new Intl.DateTimeFormat([], opts);
+      }
+      var out = {};
+      fmt.formatToParts(new Date()).forEach(function (part) {
+        if (part.type in out === false) out[part.type] = Number(part.value);
+      });
+      return out;
+    }
+
+    function update(clockEl) {
+      var t = partsNow(clockEl.dataset.timezone || undefined);
+      if (isNaN(t.hour)) return;
+
+      var hour = clockEl.querySelector('[data-hand-hour]');
+      var minute = clockEl.querySelector('[data-hand-minute]');
+      var second = clockEl.querySelector('[data-hand-second]');
+      var readout = clockEl.querySelector('[data-clock-time]');
+
+      var secondDeg = t.second * 6;
+      var minuteDeg = t.minute * 6 + t.second * 0.1;
+      var hourDeg = (t.hour % 12) * 30 + t.minute * 0.5;
+
+      if (second) second.style.transform = 'rotate(' + secondDeg + 'deg)';
+      if (minute) minute.style.transform = 'rotate(' + minuteDeg + 'deg)';
+      if (hour) hour.style.transform = 'rotate(' + hourDeg + 'deg)';
+
+      if (readout) {
+        readout.textContent =
+          String(t.hour).padStart(2, '0') + ':' +
+          String(t.minute).padStart(2, '0') + ':' +
+          String(t.second).padStart(2, '0');
+      }
+    }
+
+    function tick() {
+      clocks.forEach(update);
+    }
+
+    tick();
+    setInterval(tick, 1000);
+  })();
+{% endjavascript %}
