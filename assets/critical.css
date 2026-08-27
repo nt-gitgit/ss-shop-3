@@ -1,12 +1,15 @@
 /** Critical CSS. Loaded on every page. */
 
 /**
- * The root unit. 1rem is 20px, sized fluidly so it grows with the viewport
- * rather than snapping at a breakpoint. Every rem token in the system is
- * written against this.
+ * A plain, FIXED 20px root (matching the source's --unit: 10px = 2 rem) --
+ * not fluid. The source design system has no viewport-scaling root of its
+ * own; every size that needs to respond to viewport width is already a
+ * literal clamp()/vw value in the type scale, so the root just needs to be
+ * stable. Every other rem value in this theme (spacing, component sizing)
+ * is written assuming this exact 20px root.
  */
 html {
-  font-size: max(18px, calc(8px + 0.83333vw));
+  font-size: 20px;
   -webkit-text-size-adjust: 100%;
 }
 
@@ -40,9 +43,9 @@ body {
   margin: 0;
   min-height: 100svh;
   font-family: var(--sans-serif);
-  font-size: var(--ts-body-l-fs);
-  line-height: var(--ts-body-l-lh);
-  letter-spacing: var(--ts-body-l-ls);
+  font-size: var(--ts-body-m-fs);
+  line-height: var(--ts-body-m-lh);
+  letter-spacing: var(--ts-body-m-ls);
   font-weight: var(--font-weight);
   -webkit-font-smoothing: antialiased;
   text-rendering: geometricPrecision;
@@ -146,12 +149,10 @@ h6 {
 }
 
 .ts-h2 {
-  font-family: var(--display);
+  font-family: var(--sans-serif);
   font-size: var(--ts-h2-fs);
   line-height: var(--ts-h2-lh);
   letter-spacing: var(--ts-h2-ls);
-  text-transform: uppercase;
-  font-weight: 900;
 }
 
 .ts-body-xl {

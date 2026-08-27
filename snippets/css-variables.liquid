@@ -1,20 +1,15 @@
 {% doc %}
   Tokens: faces, the theme contract, the type scale, layout, surface and
-  motion. Ported from the agency's own design system (springsummer.dk) for
-  its Black Friday merch drop.
+  motion. A direct port of the agency's own design-system tokens
+  (colors_and_type.css / grid.css) for its Black Friday merch drop — same
+  literal clamp()/px values as the source, not a rescaled approximation.
 
-  Two things here are load bearing and easy to get wrong.
-
-  First, the root unit. 1rem is 20px, sized fluidly, which is what makes
-  every rem value in the spec (--br .2rem, --header-height 2.6rem) resolve
-  to the right pixels.
-
-  Second, the theme contract. --text-color and --background-color hold bare
-  HSL components with no hsl() wrapper, so consumers can write
+  The theme contract: --text-color and --background-color hold bare HSL
+  components with no hsl() wrapper, so consumers can write
   hsla(var(--text-color) / .2) for a hairline. The named presets below sit
   on top of that contract. They are a convenience, not the system: any
-  container can carry its own pair. This shop's default pair (signal red on
-  stone) is itself just one custom pair, not one of the five presets.
+  container can carry its own pair. This shop's default pair (signal red
+  on stone) is itself just one custom pair, not one of the five presets.
 
   @example
   {% render 'css-variables' %}
@@ -46,6 +41,12 @@
     font-display: swap;
   }
 
+  @font-face {
+    font-family: 'Noto';
+    src: url('{{ 'noto-sans-tc.woff2' | asset_url }}') format('woff2');
+    font-display: swap;
+  }
+
   :root {
     {% # Chrome palette, bare components so alpha variants work %}
     --color-white: 0 0% 100%;
@@ -59,58 +60,65 @@
     --red: hsl(var(--color-red));
 
     {% # Faces %}
-    --display: 'Grotesk', 'Impact', sans-serif;
-    --sans-serif: 'Montreal', sans-serif;
-    --mono: 'Supply', ui-monospace, monospace;
+    --display: 'Grotesk', 'Impact', 'Haettenschweiler', sans-serif;
+    --sans-serif: 'Montreal', 'Neue Haas Grotesk', 'Helvetica Neue', sans-serif;
+    --mono: 'Supply', ui-monospace, 'SF Mono', monospace;
+    --chinese: 'Noto', 'Noto Sans TC', sans-serif;
     --font-weight: 400;
 
-    {% # Display sizing: a multiplier against one percent of usable grid width %}
-    --global-fs-mobile: 15;
-    --global-fs-desktop: 13.5;
-    --grid-vw: calc((100vw - var(--grid-margin) * 2) / 100);
-
-    {% # Type scale %}
-    --ts-h1-fs: calc(var(--grid-vw) * var(--global-fs-mobile));
+    {% # Type scale — literal, same as the source design system %}
+    --ts-h1-fs: clamp(86px, 10.5vw, 280px);
     --ts-h1-lh: 0.76;
     --ts-h1-ls: -0.01em;
 
-    --ts-h2-fs: calc(var(--grid-vw) * var(--global-fs-mobile) * 0.55);
+    --ts-h2-fs: clamp(56px, 8vw, 140px);
     --ts-h2-lh: 1;
     --ts-h2-ls: 0.02em;
 
-    --ts-body-xl-fs: 1.75rem;
+    --ts-body-xl-fs: clamp(24px, 3vw, 40px);
     --ts-body-xl-lh: 1.1;
     --ts-body-xl-ls: 0.02em;
 
-    --ts-body-menu-fs: 1rem;
+    --ts-body-menu-fs: clamp(16px, 2vw, 20px);
     --ts-body-menu-lh: 1.4;
     --ts-body-menu-ls: 0.02em;
 
-    --ts-body-l-fs: 0.9rem;
+    --ts-body-l-fs: clamp(15px, 2vw, 18px);
     --ts-body-l-lh: 1.4;
     --ts-body-l-ls: 0.02em;
 
-    --ts-body-s-fs: 0.7rem;
-    --ts-body-s-lh: 1.5;
-    --ts-body-s-ls: 0.02em;
+    --ts-body-m-fs: 14px;
+    --ts-body-m-lh: 1.5;
+    --ts-body-m-ls: 0.02em;
 
-    --ts-label-m-fs: 0.6rem;
+    --ts-body-s-fs: 12px;
+    --ts-body-s-lh: 1.3;
+    --ts-body-s-ls: 0.023em;
+
+    --ts-body-xs-fs: 10px;
+    --ts-body-xs-lh: normal;
+    --ts-body-xs-ls: 0.02em;
+
+    --ts-label-m-fs: 12px;
     --ts-label-m-lh: 1.3;
     --ts-label-m-ls: 0.01em;
 
-    --ts-label-s-fs: 0.5rem;
+    --ts-label-s-fs: 10px;
     --ts-label-s-lh: 1.26;
     --ts-label-s-ls: 0.01em;
 
-    --ts-cta-fs: 0.6rem;
+    --ts-cta-fs: 12px;
     --ts-cta-lh: 1.26;
     --ts-cta-ls: 0.01em;
 
-    {% # Layout %}
-    --header-height: 2.6rem;
+    {% # Layout — literal px, matching grid.css exactly %}
+    --unit: 10px;
+    --br: 4px;
+    --header-height: 52px;
     --grid-cols: 6;
-    --grid-margin: 1rem;
-    --grid-gap: 1rem;
+    --grid-margin: 20px;
+    --grid-gap: 20px;
+    --hairline-w: 1px;
 
     {% # One column plus one gap, and one gap on its own %}
     --gutter: var(--grid-gap);
@@ -118,18 +126,14 @@
       (100vw - var(--grid-margin) * 2 + var(--grid-gap)) / var(--grid-cols)
     );
 
-    {% # How far the bleed mask takes to fade out at the right edge %}
-    --bleed-fade: 12.5rem;
-
-    {% # Section rhythm %}
-    --section-s: 3rem;
-    --section-m: 5rem;
-    --section-l: 7.5rem;
+    {% # Section rhythm, a fallback for pages the mockup didn't cover %}
+    --section-s: 48px;
+    --section-m: 80px;
+    --section-l: 120px;
 
     {% # Surface %}
-    --br: 0.2rem;
     --border-color: hsla(var(--text-color) / 0.2);
-    --detail-color: hsla(var(--text-color) / 0.3);
+    --detail-color: hsla(var(--text-color) / 0.2);
 
     {% # Motion, circular eases only %}
     --ease-out: cubic-bezier(0, 0.55, 0.45, 1);
@@ -142,25 +146,23 @@
   @media (min-width: 900px) {
     :root {
       --grid-cols: 12;
-      --grid-margin: 2.7rem;
-      --ts-h1-fs: calc(var(--grid-vw) * var(--global-fs-desktop));
-      --ts-h2-fs: calc(var(--grid-vw) * var(--global-fs-desktop) * 0.55);
+      --grid-margin: 54px;
     }
   }
 
-  {% # Theme presets. Any container can still set its own custom pair %}
+  {% # Theme presets, matching the source's five theme classes %}
   .theme-light {
     --text-color: 0 0% 0%;
     --background-color: 0 0% 100%;
   }
 
   .theme-dark {
-    --text-color: 49 14% 85%;
+    --text-color: 0 0% 100%;
     --background-color: 0 0% 0%;
   }
 
   .theme-stone {
-    --text-color: 359 99% 61%;
+    --text-color: 0 0% 0%;
     --background-color: 49 14% 85%;
   }
 

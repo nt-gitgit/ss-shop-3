@@ -28,8 +28,8 @@
       <div class="ts-body-l">{{ section.settings.col_3_body }}</div>
     </div>
     <div class="hero__info-col hero__info-cta">
-      <a href="{{ section.settings.button_link | default: '#drop' }}" class="arrow-link">
-        <span class="link-title ts-cta">{{ section.settings.button_label }}</span>
+      <a href="{{ section.settings.button_link | default: '#drop' }}" class="button">
+        <span class="button__label">{{ section.settings.button_label }}</span>
         <span class="button__icon" aria-hidden="true">{{ 'icon-arrow.svg' | inline_asset_content }}</span>
       </a>
     </div>
@@ -38,10 +38,11 @@
 
 {% stylesheet %}
   .hero {
-    padding: var(--section-m) var(--grid-margin) 0;
+    padding: 64px var(--grid-margin) 0;
   }
 
   .hero__heading {
+    font-size: clamp(86px, 13.5vw, 260px);
     margin: 28px 0 0;
     text-wrap: balance;
   }
@@ -52,9 +53,8 @@
     gap: 24px;
     align-items: end;
     border-top: 1px solid var(--border-color);
-    margin-top: var(--section-s);
+    margin-top: 56px;
     padding-top: 18px;
-    padding-bottom: var(--section-s);
   }
 
   .hero__info-label {

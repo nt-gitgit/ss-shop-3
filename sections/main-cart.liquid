@@ -45,9 +45,8 @@
         <p class="ts-body-s cart-page__tax-note">{{ 'cart.taxes_shipping_note' | t }}</p>
 
         <form action="{{ routes.cart_url }}" method="post">
-          <button type="submit" name="checkout" class="arrow-link cart-page__checkout">
-            <span class="link-title ts-cta">{{ 'shop.pay_now' | t }}</span>
-            <span class="button__icon" aria-hidden="true">{{ 'icon-arrow.svg' | inline_asset_content }}</span>
+          <button type="submit" name="checkout" class="cart-page__checkout ts-cta">
+            {{ 'shop.pay_now' | t }}
           </button>
         </form>
       </div>
@@ -119,12 +118,19 @@
 
   .cart-page__checkout {
     width: 100%;
-    justify-content: center;
-    padding: 0.9rem;
-    border: 1px solid currentcolor;
+    text-align: center;
+    padding: 14px;
+    border: 1px solid hsl(var(--text-color));
     border-radius: var(--br);
-    max-width: none;
+    background: hsl(var(--text-color));
+    color: hsl(var(--background-color));
+    cursor: pointer;
+    transition: opacity 300ms var(--ease-out);
     margin-top: 8px;
+  }
+
+  .cart-page__checkout:hover {
+    opacity: 0.85;
   }
 
   .cart-page__empty {

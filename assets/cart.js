@@ -67,7 +67,6 @@
       .then(function (cart) {
         document.querySelectorAll('[data-cart-count]').forEach(function (el) {
           el.textContent = cart.item_count;
-          el.hidden = cart.item_count === 0;
         });
       });
   }

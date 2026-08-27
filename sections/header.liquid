@@ -31,18 +31,9 @@
       </span>
     {% endif %}
 
-    <div class="site-header__icons">
-      {% if shop.customer_accounts_enabled %}
-        <a href="{{ routes.account_url }}" aria-label="{{ 'general.accessibility.account' | t }}">
-          {{ 'icon-account.svg' | inline_asset_content }}
-        </a>
-      {% endif %}
-
-      <button type="button" class="site-header__cart" data-cart-toggle aria-label="{{ 'general.accessibility.cart' | t }}">
-        <sup data-cart-count {% if cart.item_count == 0 %}hidden{% endif %}>{{ cart.item_count }}</sup>
-        {{ 'icon-cart.svg' | inline_asset_content }}
-      </button>
-    </div>
+    <button type="button" class="site-header__cart ts-label-s" data-cart-toggle>
+      {{ 'general.accessibility.cart' | t }} [<span data-cart-count>{{ cart.item_count }}</span>]
+    </button>
   </div>
 
   <div class="site-header__bracket-wrap" aria-hidden="true">
@@ -56,11 +47,11 @@
     top: 0;
     z-index: 50;
     display: grid;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
     gap: 24px;
     height: var(--header-height);
-    padding-inline: var(--grid-margin);
+    padding: 0 20px 0 var(--grid-margin);
     background-color: hsla(var(--background-color) / 0.92);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
@@ -77,7 +68,7 @@
   .site-header__brand {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     flex-shrink: 0;
     text-decoration: none;
     color: currentcolor;
@@ -87,8 +78,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 24px;
-    height: 24px;
+    width: 26px;
+    height: 26px;
     flex-shrink: 0;
     color: currentcolor;
   }
@@ -109,7 +100,7 @@
 
   .site-header__menu {
     display: flex;
-    gap: 2rem;
+    gap: 28px;
     justify-content: center;
     overflow: hidden;
   }
@@ -126,7 +117,8 @@
   .site-header__meta {
     display: flex;
     align-items: center;
-    gap: 1.5rem;
+    justify-self: end;
+    gap: 18px;
     flex-shrink: 0;
   }
 
@@ -134,43 +126,33 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    font-size: var(--ts-body-s-fs);
-    line-height: var(--ts-body-s-lh);
-    letter-spacing: var(--ts-body-s-ls);
-    white-space: nowrap;
-    opacity: 0.75;
-  }
-
-  .site-header__icons {
-    display: flex;
-    gap: 1rem;
-  }
-
-  .site-header__icons a,
-  .site-header__cart {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: currentcolor;
-    text-decoration: none;
-    background: none;
-    border: 0;
-    padding: 0;
-    cursor: pointer;
-  }
-
-  .site-header__icons svg,
-  .site-header__cart svg {
-    width: 1.3rem;
-  }
-
-  .site-header__cart sup {
-    position: absolute;
-    left: 100%;
-    top: -0.2rem;
     font-family: var(--mono);
     font-size: var(--ts-label-s-fs);
+    line-height: var(--ts-label-s-lh);
+    letter-spacing: var(--ts-label-s-ls);
+    text-transform: uppercase;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    opacity: 0.55;
+  }
+
+  .site-header__cart {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: currentcolor;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: var(--br);
+    padding: 6px 10px;
+    cursor: pointer;
+    font-variant-numeric: tabular-nums;
+    transition: background-color 300ms var(--ease-out), color 300ms var(--ease-out);
+  }
+
+  .site-header__cart:hover {
+    background-color: hsl(var(--text-color));
+    color: hsl(var(--background-color));
   }
 
   @media (max-width: 700px) {

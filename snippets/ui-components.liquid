@@ -53,13 +53,14 @@
 
   /**
    * Arrow link. Text plus an icon chip, with a 0.75px underline that grows
-   * from nothing over 500ms. Never a fill, never a pill.
+   * from nothing over 500ms. Never a fill, never a pill. This is the CTA
+   * used everywhere EXCEPT the hero -- footer links, checkout-adjacent
+   * links, the empty-cart link.
    *
    * Below 900px the underline is permanently on, because there is no hover
    * there to reveal it.
    */
-  .arrow-link,
-  .button {
+  .arrow-link {
     --line-size: 0%;
     --border-icon-svg-color: hsl(var(--background-color));
     --border-icon-background-color: hsl(var(--text-color));
@@ -82,14 +83,12 @@
     text-align: left;
   }
 
-  .arrow-link:disabled,
-  .button:disabled {
+  .arrow-link:disabled {
     opacity: 0.5;
     cursor: not-allowed;
   }
 
-  .link-title,
-  .button__label {
+  .link-title {
     display: inline;
     background: linear-gradient(hsla(var(--text-color)), hsla(var(--text-color))) 0 100% no-repeat;
     background-size: var(--line-size) 0.75px;
@@ -97,17 +96,65 @@
   }
 
   .arrow-link:hover:not(:disabled),
-  .arrow-link:focus-visible,
-  .button:hover:not(:disabled),
-  .button:focus-visible {
+  .arrow-link:focus-visible {
     --line-size: 100%;
   }
 
   @media (max-width: 899px) {
-    .link-title,
-    .button__label {
+    .link-title {
       --line-size: 100%;
     }
+  }
+
+  /**
+   * Button. A bordered pill housing an icon chip, inverting solid on
+   * hover. The hero's "Shop the drop" CTA -- the one CTA in the source
+   * that IS a pill rather than an underlined arrow-link.
+   */
+  .button {
+    --border-icon-svg-color: hsl(var(--background-color));
+    --border-icon-background-color: hsl(var(--text-color));
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    width: fit-content;
+    text-decoration: none;
+    color: currentcolor;
+    font-family: var(--mono);
+    font-size: var(--ts-cta-fs);
+    line-height: var(--ts-cta-lh);
+    letter-spacing: var(--ts-cta-ls);
+    text-transform: uppercase;
+    background: transparent;
+    border: 1px solid currentcolor;
+    border-radius: var(--br);
+    padding: 8px 8px 8px 14px;
+    cursor: pointer;
+    transition: background-color 300ms var(--ease-out), color 300ms var(--ease-out);
+  }
+
+  .button:hover:not(:disabled),
+  .button:focus-visible {
+    background-color: hsl(var(--text-color));
+    color: hsl(var(--background-color));
+  }
+
+  .button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .button__label {
+    display: inline;
+  }
+
+  /* The pill button's icon chip is outlined, not filled -- the pill's own
+     border already does the work, and inverting the whole pill on hover
+     carries the icon (currentColor) along with it. */
+  .button .button__icon {
+    background: transparent;
+    border: 1px solid currentcolor;
+    color: currentcolor;
   }
 
   /**

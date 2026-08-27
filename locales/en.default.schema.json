@@ -34,6 +34,8 @@
     "timezone_info": "IANA timezone identifier, e.g. Europe/Copenhagen. Leave blank to show the visitor's local time.",
     "theme": "Section theme",
     "heading": "Heading",
+    "heading_cn": "Heading (Chinese)",
+    "heading_cn_info": "Set with the Noto Sans TC face, after the English heading. Leave blank to omit.",
     "subheading": "Subheading",
     "body": "Body",
     "eyebrow": "Eyebrow",

@@ -34,6 +34,7 @@
   },
   "cart": {
     "title": "Cart",
+    "bag": "Bag",
     "remove": "Remove",
     "decrease_quantity": "Decrease quantity",
     "increase_quantity": "Increase quantity",

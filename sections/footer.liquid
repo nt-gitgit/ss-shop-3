@@ -9,7 +9,7 @@
 
 <footer class="site-footer {{ section.settings.theme }} full-width">
   {% if section.settings.heading != blank %}
-    <div class="site-footer__headline ts-h2" data-reveal>{{ section.settings.heading }}</div>
+    <div class="site-footer__headline" data-reveal>{{ section.settings.heading }} <span class="site-footer__headline-cn">{{ section.settings.heading_cn }}</span></div>
   {% endif %}
 
   <div class="site-footer__grid">
@@ -115,11 +115,19 @@
 
 {% stylesheet %}
   .site-footer {
-    padding: var(--section-m) var(--grid-margin) 2rem;
+    padding: 56px var(--grid-margin) 32px;
   }
 
   .site-footer__headline {
-    margin-bottom: var(--section-s);
+    font: 900 clamp(48px, 10vw, 180px) / 0.78 var(--display);
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    margin-bottom: 44px;
+  }
+
+  .site-footer__headline-cn {
+    font-family: var(--chinese);
+    font-weight: 400;
   }
 
   .site-footer__grid {
@@ -242,6 +250,13 @@
       "id": "heading",
       "label": "t:labels.heading",
       "default": "All seasons"
+    },
+    {
+      "type": "text",
+      "id": "heading_cn",
+      "label": "t:labels.heading_cn",
+      "info": "t:labels.heading_cn_info",
+      "default": "春夏"
     },
     {
       "type": "link_list",
