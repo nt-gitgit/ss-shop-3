@@ -5,6 +5,16 @@
 // submit is handled by the shared delegate in cart.js -- this file only
 // owns variant state and the PDP's own quantity stepper and thumbnails.
 (function () {
+  // The main image renders with a srcset (see main-product.liquid), and a
+  // srcset always wins over src once present, so swapping just .src has no
+  // visible effect -- srcset has to go too.
+  function setMainImage(mainImg, src) {
+    if (!mainImg) return;
+    mainImg.removeAttribute('srcset');
+    mainImg.removeAttribute('sizes');
+    mainImg.src = src;
+  }
+
   var form = document.querySelector('[data-product-form-main]');
   if (!form) return;
 
@@ -106,8 +116,7 @@
     }
 
     if (variant.featured_image && variant.featured_image.src) {
-      var mainImg = document.getElementById('product-main-image');
-      if (mainImg) mainImg.src = variant.featured_image.src;
+      setMainImage(document.getElementById('product-main-image'), variant.featured_image.src);
     }
 
     if (history.replaceState) {
@@ -132,8 +141,7 @@
   var figureLabel = document.querySelector('[data-figure-label]');
   thumbs.forEach(function (thumb) {
     thumb.addEventListener('click', function () {
-      var mainImg = document.getElementById('product-main-image');
-      if (mainImg) mainImg.src = thumb.getAttribute('data-image-src');
+      setMainImage(document.getElementById('product-main-image'), thumb.getAttribute('data-image-src'));
       thumbs.forEach(function (t) { t.classList.toggle('is-active', t === thumb); });
       if (figureLabel) figureLabel.textContent = thumb.getAttribute('data-image-label') || '';
     });
