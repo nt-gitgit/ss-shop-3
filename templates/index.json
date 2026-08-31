@@ -6,7 +6,9 @@
     },
     "campaign-banner": {
       "type": "campaign-banner",
-      "settings": {}
+      "settings": {
+        "image": "shopify://shop_images/campaign-merch-bundle.png"
+      }
     },
     "black-friday": {
       "type": "black-friday",

@@ -7,7 +7,7 @@
 {% endcomment %}
 
 <div class="campaign-banner full-width" data-reveal>
-  <div class="campaign-banner__frame">
+  <div class="campaign-banner__frame{% if section.settings.image == blank %} campaign-banner__frame--placeholder{% endif %}">
     {% if section.settings.image != blank %}
       {{
         section.settings.image
@@ -29,30 +29,37 @@
 
 {% stylesheet %}
   .campaign-banner {
-    padding: 1.2rem var(--grid-margin) 0;
+    padding: 1.2rem var(--grid-margin);
   }
 
   .campaign-banner__frame {
     position: relative;
     overflow: hidden;
     border-radius: var(--br);
-    aspect-ratio: 2.45 / 1;
     color: var(--white);
   }
 
+  .campaign-banner__frame--placeholder {
+    aspect-ratio: 2.45 / 1;
+  }
+
   @media (max-width: 899px) {
-    .campaign-banner__frame {
+    .campaign-banner__frame--placeholder {
       aspect-ratio: 4 / 3;
     }
   }
 
-  .campaign-banner__image,
+  .campaign-banner__image {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
   .campaign-banner__placeholder {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;
   }
 
   .campaign-banner__label {
