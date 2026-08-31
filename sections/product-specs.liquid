@@ -1,0 +1,175 @@
+{% comment %}
+  Product spec sheet: a two-column list of spec rows on the left, a
+  measurements table and the newsletter signup on the right. Reads the
+  `custom.specs` and `custom.measurements` metafields (both
+  list.single_line_text_field, one "Label: Value" string per line) --
+  each half renders only when its metafield has data, so the section is
+  safe to include on every product even before specs are written.
+
+  @example
+  {% section 'product-specs' %}
+{% endcomment %}
+
+<section id="spec" class="product-specs full-width">
+  <div class="product-specs__grid">
+    {% if product.metafields.custom.specs != blank %}
+      <div class="product-specs__rows">
+        <div class="product-specs__rows-header">
+          <span class="trumpet">{{ 'general.spec.heading' | t }}</span>
+          <span class="product-specs__divider"></span>
+        </div>
+        {% for row in product.metafields.custom.specs.value %}
+          {% assign row_parts = row | split: ': ' %}
+          <div class="product-specs__row">
+            <span class="ts-label-s product-specs__row-label">{{ row_parts[0] }}</span>
+            <span class="ts-body-l">{{ row_parts[1] }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <aside class="product-specs__aside">
+      {% if product.metafields.custom.measurements != blank %}
+        <div class="product-specs__card">
+          <span class="ts-label-s product-specs__card-heading">{{ 'general.spec.measurements' | t }}</span>
+          {% for row in product.metafields.custom.measurements.value %}
+            {% assign row_parts = row | split: ': ' %}
+            <div class="product-specs__measure">
+              <span>{{ row_parts[0] }}</span>
+              <span class="product-specs__measure-value">{{ row_parts[1] }}</span>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <div class="product-specs__card">
+        <span class="ts-label-s product-specs__card-heading">{{ 'general.footer.newsletter' | t }}</span>
+        {% form 'customer', id: 'product-specs-newsletter-form', class: 'product-specs__newsletter-form' %}
+          <input type="hidden" name="contact[tags]" value="newsletter">
+          {% if form.posted_successfully? %}
+            <p class="ts-label-s">{{ 'newsletter.success' | t }}</p>
+          {% else %}
+            <div class="product-specs__newsletter-row">
+              <input type="email" name="contact[email]" class="product-specs__newsletter-input" placeholder="{{ 'newsletter.email_label' | t }}" required>
+              <span class="ts-label-s">{{ 'newsletter.submit' | t }}</span>
+            </div>
+          {% endif %}
+        {% endform %}
+      </div>
+    </aside>
+  </div>
+</section>
+
+{% stylesheet %}
+  .product-specs {
+    padding: var(--section-m) var(--grid-margin);
+  }
+
+  .product-specs__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 40px;
+  }
+
+  @media (min-width: 900px) {
+    .product-specs__grid {
+      grid-template-columns: minmax(0, 1fr) 280px;
+    }
+  }
+
+  .product-specs__rows {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 20px 40px;
+    align-content: start;
+  }
+
+  @media (min-width: 640px) {
+    .product-specs__rows {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .product-specs__rows-header {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    grid-column: 1 / -1;
+  }
+
+  .product-specs__divider {
+    display: block;
+    height: 1px;
+    background: var(--border-color);
+  }
+
+  .product-specs__row {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .product-specs__row-label {
+    opacity: 0.5;
+    padding-top: 3px;
+  }
+
+  .product-specs__aside {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .product-specs__card {
+    border: 1px solid var(--border-color);
+    border-radius: var(--br);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .product-specs__card-heading {
+    opacity: 0.6;
+  }
+
+  .product-specs__measure {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--mono);
+    font-size: var(--ts-body-s-fs);
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .product-specs__measure-value {
+    opacity: 0.6;
+  }
+
+  .product-specs__newsletter-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 8px;
+  }
+
+  .product-specs__newsletter-input {
+    flex: 1;
+    border: 0;
+    background: transparent;
+    color: currentcolor;
+    font-family: var(--mono);
+    font-size: var(--ts-body-s-fs);
+    outline: none;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.product_specs",
+  "settings": []
+}
+{% endschema %}

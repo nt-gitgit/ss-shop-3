@@ -3,7 +3,15 @@
     "main": {
       "type": "main-product",
       "settings": {}
+    },
+    "statement": {
+      "type": "product-statement",
+      "settings": {}
+    },
+    "specs": {
+      "type": "product-specs",
+      "settings": {}
     }
   },
-  "order": ["main"]
+  "order": ["main", "statement", "specs"]
 }

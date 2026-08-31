@@ -24,7 +24,9 @@
     "password": "Password",
     "social_media": "Social media",
     "rail": "Byline & clock",
-    "product_carousel": "Product carousel"
+    "product_carousel": "Product carousel",
+    "product_statement": "Product statement",
+    "product_specs": "Product specification"
   },
   "labels": {
     "menu": "Menu",
@@ -90,7 +92,9 @@
     "favicon": "Favicon image",
     "favicon_info": "Displayed at 32x32px in the browser tab.",
     "free_shipping_threshold": "Free shipping threshold",
-    "free_shipping_threshold_info": "In your store's currency, e.g. 600. Used by the cart drawer's progress bar."
+    "free_shipping_threshold_info": "In your store's currency, e.g. 600. Used by the cart drawer's progress bar.",
+    "badge_text": "Badge text",
+    "badge_text_info": "Shown bottom-right on the product image, e.g. a drop or season tag. Leave blank to hide."
   },
   "options": {
     "theme": {

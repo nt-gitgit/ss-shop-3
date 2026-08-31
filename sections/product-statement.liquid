@@ -1,0 +1,84 @@
+{% comment %}
+  A full-bleed editorial statement: trumpet, a huge single-line headline,
+  and a short body. Used on the product page between the buy box and the
+  spec section, but generic enough to drop anywhere.
+
+  @example
+  {% section 'product-statement' %}
+{% endcomment %}
+
+<section class="product-statement {{ section.settings.theme }} full-width">
+  <div class="product-statement__content">
+    {% if section.settings.eyebrow != blank %}
+      <span class="trumpet">{{ section.settings.eyebrow }}</span>
+    {% endif %}
+    {% if section.settings.heading != blank %}
+      <h2 class="ts-h1 product-statement__heading">{{ section.settings.heading }}</h2>
+    {% endif %}
+    {% if section.settings.body != blank %}
+      <p class="ts-body-xl product-statement__body">{{ section.settings.body }}</p>
+    {% endif %}
+  </div>
+</section>
+
+{% stylesheet %}
+  .product-statement {
+    padding: var(--section-m) var(--grid-margin);
+    overflow: hidden;
+  }
+
+  .product-statement__content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .product-statement__heading {
+    white-space: nowrap;
+  }
+
+  .product-statement__body {
+    max-width: 24ch;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.product_statement",
+  "settings": [
+    {
+      "type": "select",
+      "id": "theme",
+      "label": "t:labels.theme",
+      "options": [
+        { "value": "theme-light", "label": "t:options.theme.light" },
+        { "value": "theme-dark", "label": "t:options.theme.dark" },
+        { "value": "theme-stone", "label": "t:options.theme.stone" },
+        { "value": "theme-red", "label": "t:options.theme.red" },
+        { "value": "theme-grey", "label": "t:options.theme.grey" },
+        { "value": "", "label": "t:options.theme.custom" }
+      ],
+      "default": "theme-red"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:labels.eyebrow",
+      "default": "Merch drop"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:labels.heading",
+      "default": "Wear the work"
+    },
+    {
+      "type": "textarea",
+      "id": "body",
+      "label": "t:labels.body",
+      "default": "Strategy — Design — Development. Printed on so nobody has to ask twice."
+    }
+  ],
+  "presets": [{ "name": "t:general.product_statement" }]
+}
+{% endschema %}

@@ -34,6 +34,10 @@
       "title": "404",
       "not_found": "Page not found.",
       "back_to_shopping": "Back to shopping"
+    },
+    "spec": {
+      "heading": "Specification",
+      "measurements": "Measurements / cm"
     }
   },
   "shop": {
@@ -63,7 +67,8 @@
     "quantity": "Quantity",
     "description": "Description",
     "gallery": "Product image",
-    "from": "From"
+    "from": "From",
+    "figure": "FIG. {{ index }}"
   },
   "carousel": {
     "previous": "Previous product",

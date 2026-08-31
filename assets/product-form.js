@@ -127,11 +127,15 @@
     });
   });
 
-  // Thumbnails swap the main image; no variant implications.
-  form.closest('.product').querySelectorAll('[data-product-thumb]').forEach(function (thumb) {
+  // Thumbnails swap the main image and figure label; no variant implications.
+  var thumbs = form.closest('.product').querySelectorAll('[data-product-thumb]');
+  var figureLabel = document.querySelector('[data-figure-label]');
+  thumbs.forEach(function (thumb) {
     thumb.addEventListener('click', function () {
       var mainImg = document.getElementById('product-main-image');
       if (mainImg) mainImg.src = thumb.getAttribute('data-image-src');
+      thumbs.forEach(function (t) { t.classList.toggle('is-active', t === thumb); });
+      if (figureLabel) figureLabel.textContent = thumb.getAttribute('data-image-label') || '';
     });
   });
 

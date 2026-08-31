@@ -1,8 +1,12 @@
 {% comment %}
-  Product detail page. Image + thumbnail strip on one side, title, price,
-  variant pickers, quantity and add-to-cart on the other. Variant matching
-  runs client-side off an embedded JSON blob (assets/product-form.js) so
-  there's no second fetch to /products/{handle}.js.
+  Product detail page. Image with a figure/drop badge overlay and a
+  thumbnail strip on one side; trumpet, title, price, variant pickers,
+  quantity, add-to-cart and a facts grid on the other, sticky on desktop.
+  Variant matching runs client-side off an embedded JSON blob
+  (assets/product-form.js) so there's no second fetch to
+  /products/{handle}.js. Facts come from the `custom.facts` metafield
+  (list.single_line_text_field, one "Label: Value" string per line) --
+  the section renders fine without it.
 
   @example
   {% section 'main-product' %}
@@ -17,11 +21,25 @@
         {% else %}
           {% render 'media-placeholder', class: 'product__placeholder' %}
         {% endif %}
+        {% if product.images.size > 1 %}
+          <span class="ts-label-s product__figure-label" data-figure-label>{{ 'products.figure' | t: index: '01' }}</span>
+        {% endif %}
+        {% if section.settings.badge_text != blank %}
+          <span class="ts-label-s product__badge">{{ section.settings.badge_text }}</span>
+        {% endif %}
       </div>
       {% if product.images.size > 1 %}
         <div class="product__thumbs">
           {% for image in product.images %}
-            <button type="button" class="product__thumb" data-product-thumb data-image-src="{{ image | image_url: width: 1400 }}" aria-label="{{ 'products.gallery' | t }} {{ forloop.index }}">
+            {% assign padded_index = forloop.index | prepend: '0' | slice: -2, 2 %}
+            <button
+              type="button"
+              class="product__thumb{% if forloop.first %} is-active{% endif %}"
+              data-product-thumb
+              data-image-src="{{ image | image_url: width: 1400 }}"
+              data-image-label="{{ 'products.figure' | t: index: padded_index }}"
+              aria-label="{{ 'products.gallery' | t }} {{ forloop.index }}"
+            >
               {{ image | image_url: width: 200 | image_tag: loading: 'lazy' }}
             </button>
           {% endfor %}
@@ -30,68 +48,104 @@
     </div>
 
     <div class="product__info">
-      {% if product.type != blank %}
-        <span class="trumpet product__type">{{ product.type }}</span>
-      {% endif %}
+      <div class="product__info-sticky">
+        <div class="product__heading-group">
+          <span class="trumpet product__type">{{ product.type | default: 'Merch' }}</span>
+          <h1 class="ts-h2 product__title">{{ product.title }}</h1>
+          {% if product.description != blank %}
+            <div class="rich-text ts-body-l product__description">{{ product.description }}</div>
+          {% endif %}
+        </div>
 
-      <h1 class="ts-h2 product__title">{{ product.title }}</h1>
+        <div class="price product__price ff-mono" data-product-price>
+          <span class="price__amount" data-price-amount>{{ product.selected_or_first_available_variant.price | money }}</span>
+          {% if product.selected_or_first_available_variant.compare_at_price > product.selected_or_first_available_variant.price %}
+            <span class="price__compare-at" data-price-compare-at>{{ product.selected_or_first_available_variant.compare_at_price | money }}</span>
+          {% endif %}
+          <span class="ts-label-s product__price-note">{{ 'cart.taxes_shipping_note' | t }}</span>
+        </div>
 
-      <div class="price product__price ff-mono" data-product-price>
-        <span class="price__amount" data-price-amount>{{ product.selected_or_first_available_variant.price | money }}</span>
-        {% if product.selected_or_first_available_variant.compare_at_price > product.selected_or_first_available_variant.price %}
-          <span class="price__compare-at" data-price-compare-at>{{ product.selected_or_first_available_variant.compare_at_price | money }}</span>
-        {% endif %}
-      </div>
+        <form method="post" action="{{ routes.cart_add_url }}" data-product-form data-product-form-main>
+          <script type="application/json" data-product-json>{{ product | json }}</script>
 
-      {% if product.description != blank %}
-        <div class="rich-text ts-body-l product__description">{{ product.description }}</div>
-      {% endif %}
+          {% unless product.has_only_default_variant %}
+            {% for option in product.options_with_values %}
+              {% assign option_name_down = option.name | downcase %}
+              {% assign is_swatch = false %}
+              {% assign is_size = false %}
+              {% if option_name_down contains 'colour' or option_name_down contains 'color' %}
+                {% assign is_swatch = true %}
+              {% elsif option_name_down contains 'size' %}
+                {% assign is_size = true %}
+              {% endif %}
 
-      <form method="post" action="{{ routes.cart_add_url }}" data-product-form data-product-form-main>
-        <script type="application/json" data-product-json>{{ product | json }}</script>
-
-        {% unless product.has_only_default_variant %}
-          {% for option in product.options_with_values %}
-            <div class="product__option">
-              <label class="trumpet product__option-label" for="option-{{ option.position }}">{{ option.name }}</label>
-              <div class="product__option-values" data-option-index="{{ option.position | minus: 1 }}">
-                {% for value in option.values %}
-                  <button type="button" class="product__option-value" data-option-value="{{ value | escape }}">{{ value }}</button>
-                {% endfor %}
+              <div class="product__option">
+                <div class="product__option-header">
+                  <span class="trumpet product__option-label">{{ option.name }}</span>
+                  {% if is_size %}
+                    <a href="#spec" class="ts-label-s product__size-guide">{{ 'general.footer.size_guide' | t }}</a>
+                  {% endif %}
+                </div>
+                <div class="product__option-values{% if is_size %} product__option-values--size{% endif %}" data-option-index="{{ option.position | minus: 1 }}">
+                  {% for value in option.values %}
+                    <button type="button" class="product__option-value{% if is_swatch %} product__option-value--swatch{% endif %}" data-option-value="{{ value | escape }}">
+                      {% if is_swatch %}
+                        {% if value.swatch.color %}
+                          <span class="product__swatch-dot" style="background: {{ value.swatch.color }};"></span>
+                        {% elsif value.swatch.image %}
+                          <span class="product__swatch-dot">{{ value.swatch.image | image_url: width: 40 | image_tag }}</span>
+                        {% endif %}
+                      {% endif %}
+                      <span>{{ value }}</span>
+                    </button>
+                  {% endfor %}
+                </div>
               </div>
+            {% endfor %}
+          {% endunless %}
+
+          <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}" data-variant-id-input>
+
+          <div class="product__add-row">
+            <div class="quantity-selector" data-quantity-selector>
+              <button type="button" data-quantity-decrease aria-label="{{ 'cart.decrease_quantity' | t }}">
+                {{ 'icon-minus.svg' | inline_asset_content }}
+              </button>
+              <input type="number" min="1" value="1" name="quantity" data-quantity-input aria-label="{{ 'products.quantity' | t }}">
+              <button type="button" data-quantity-increase aria-label="{{ 'cart.increase_quantity' | t }}">
+                {{ 'icon-plus.svg' | inline_asset_content }}
+              </button>
             </div>
-          {% endfor %}
-        {% endunless %}
 
-        <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}" data-variant-id-input>
-
-        <div class="product__add-row">
-          <div class="quantity-selector" data-quantity-selector>
-            <button type="button" data-quantity-decrease aria-label="{{ 'cart.decrease_quantity' | t }}">
-              {{ 'icon-minus.svg' | inline_asset_content }}
-            </button>
-            <input type="number" min="1" value="1" name="quantity" data-quantity-input aria-label="{{ 'products.quantity' | t }}">
-            <button type="button" data-quantity-increase aria-label="{{ 'cart.increase_quantity' | t }}">
-              {{ 'icon-plus.svg' | inline_asset_content }}
+            <button
+              type="submit"
+              class="button product__submit"
+              data-add-to-cart
+              data-adding-text="{{ 'products.adding' | t }}"
+              data-added-text="{{ 'products.added' | t }}"
+              data-sold-out-text="{{ 'products.sold_out' | t }}"
+              {% unless product.selected_or_first_available_variant.available %}disabled{% endunless %}
+            >
+              <span class="button__label" data-product-submit-label>
+                {% if product.selected_or_first_available_variant.available %}{{ 'products.add_to_cart' | t }}{% else %}{{ 'products.sold_out' | t }}{% endif %}
+              </span>
+              <span class="button__icon" aria-hidden="true">{{ 'icon-arrow.svg' | inline_asset_content }}</span>
             </button>
           </div>
+        </form>
 
-          <button
-            type="submit"
-            class="arrow-link product__submit"
-            data-add-to-cart
-            data-adding-text="{{ 'products.adding' | t }}"
-            data-added-text="{{ 'products.added' | t }}"
-            data-sold-out-text="{{ 'products.sold_out' | t }}"
-            {% unless product.selected_or_first_available_variant.available %}disabled{% endunless %}
-          >
-            <span class="link-title ts-cta" data-product-submit-label>
-              {% if product.selected_or_first_available_variant.available %}{{ 'products.add_to_cart' | t }}{% else %}{{ 'products.sold_out' | t }}{% endif %}
-            </span>
-            <span class="button__icon" aria-hidden="true">{{ 'icon-arrow.svg' | inline_asset_content }}</span>
-          </button>
-        </div>
-      </form>
+        {% if product.metafields.custom.facts != blank %}
+          <div class="product__facts">
+            {% for fact in product.metafields.custom.facts.value %}
+              {% assign fact_parts = fact | split: ': ' %}
+              <div class="product__fact">
+                <span class="ts-label-s product__fact-label">{{ fact_parts[0] }}</span>
+                <span class="ts-body-m">{{ fact_parts[1] }}</span>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
     </div>
   </div>
 </div>
@@ -116,9 +170,6 @@
 
   .product__info {
     grid-column: span 12;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
   }
 
   @media (min-width: 900px) {
@@ -128,12 +179,25 @@
 
     .product__info {
       grid-column: span 5;
-      padding-top: 1rem;
+    }
+  }
+
+  .product__info-sticky {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  @media (min-width: 900px) {
+    .product__info-sticky {
+      position: sticky;
+      top: calc(var(--header-height) + 20px);
     }
   }
 
   .product__main-image,
   .product__placeholder {
+    position: relative;
     border-radius: var(--br);
     overflow: hidden;
     aspect-ratio: 1 / 1.15;
@@ -144,6 +208,28 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+
+  .product__figure-label,
+  .product__badge {
+    position: absolute;
+    color: var(--white);
+    mix-blend-mode: difference;
+  }
+
+  .product__figure-label {
+    top: 12px;
+    left: 12px;
+  }
+
+  .product__badge {
+    bottom: 12px;
+    right: 12px;
+    background: hsl(0 0% 0% / 0.35);
+    backdrop-filter: blur(8px);
+    border-radius: var(--br);
+    padding: 6px 9px;
+    mix-blend-mode: normal;
   }
 
   .product__thumbs {
@@ -161,6 +247,13 @@
     padding: 0;
     background: none;
     cursor: pointer;
+    transition: border-color 200ms var(--ease-out), opacity 200ms var(--ease-out);
+    opacity: 0.72;
+  }
+
+  .product__thumb.is-active {
+    border-color: hsl(var(--text-color));
+    opacity: 1;
   }
 
   .product__thumb img {
@@ -169,16 +262,18 @@
     object-fit: cover;
   }
 
+  .product__heading-group {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
   .product__type {
-    opacity: 0.55;
+    opacity: 0.7;
   }
 
   .product__title {
     margin: 0;
-  }
-
-  .product__price {
-    font-size: var(--ts-body-l-fs);
   }
 
   .product__description {
@@ -186,40 +281,99 @@
     max-width: 46ch;
   }
 
+  .product__price {
+    flex-wrap: wrap;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .product__price-note {
+    opacity: 0.6;
+    font-family: var(--sans-serif);
+    text-transform: none;
+    letter-spacing: normal;
+  }
+
   .product__option {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    margin-bottom: 16px;
+    gap: 10px;
+  }
+
+  .product__option-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
   }
 
   .product__option-label {
-    opacity: 0.55;
+    opacity: 0.6;
+  }
+
+  .product__size-guide {
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
 
   .product__option-values {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 8px;
+  }
+
+  .product__option-values--size {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
   }
 
   .product__option-value {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     font-family: var(--mono);
     font-size: var(--ts-label-s-fs);
     text-transform: uppercase;
     letter-spacing: var(--ts-label-s-ls);
-    padding: 8px 11px;
+    padding: 13px 11px;
     border: 1px solid var(--border-color);
     border-radius: var(--br);
     background: transparent;
     color: currentcolor;
     cursor: pointer;
-    transition: background-color 250ms var(--ease-out), color 250ms var(--ease-out);
+    transition: background-color 250ms var(--ease-out), color 250ms var(--ease-out), border-color 250ms var(--ease-out);
+  }
+
+  .product__option-value--swatch {
+    justify-content: flex-start;
+    padding: 7px 12px 7px 8px;
+  }
+
+  .product__swatch-dot {
+    display: block;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    flex-shrink: 0;
+  }
+
+  .product__swatch-dot img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   .product__option-value.is-selected {
+    border-color: hsl(var(--text-color));
     background-color: hsl(var(--text-color));
     color: hsl(var(--background-color));
+  }
+
+  .product__option-value--swatch.is-selected {
+    background-color: transparent;
+    color: currentcolor;
   }
 
   .product__option-value:disabled {
@@ -231,21 +385,49 @@
   .product__add-row {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 12px;
     flex-wrap: wrap;
   }
 
   .product__submit {
-    padding: 0.9rem 1.1rem;
-    border: 1px solid currentcolor;
+    flex: 1;
+    justify-content: space-between;
+  }
+
+  .product__facts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border-color);
+    border: 1px solid var(--border-color);
     border-radius: var(--br);
-    max-width: none;
+    overflow: hidden;
+  }
+
+  .product__fact {
+    background-color: hsl(var(--background-color));
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .product__fact-label {
+    opacity: 0.5;
   }
 {% endstylesheet %}
 
 {% schema %}
 {
   "name": "t:general.product",
-  "settings": []
+  "settings": [
+    {
+      "type": "text",
+      "id": "badge_text",
+      "label": "t:labels.badge_text",
+      "info": "t:labels.badge_text_info",
+      "default": "Drop 01"
+    }
+  ]
 }
 {% endschema %}
