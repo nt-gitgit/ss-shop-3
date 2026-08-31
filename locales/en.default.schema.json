@@ -23,7 +23,8 @@
     "search": "Search",
     "password": "Password",
     "social_media": "Social media",
-    "rail": "Byline & clock"
+    "rail": "Byline & clock",
+    "product_carousel": "Product carousel"
   },
   "labels": {
     "menu": "Menu",
@@ -61,6 +62,12 @@
     "anchor_id": "Anchor ID",
     "anchor_id_info": "Used for menu links that jump to this section, e.g. #drop.",
     "collection": "Collection",
+    "product": "Product",
+    "description": "Description",
+    "heading_override_info": "Optional -- overrides the product's own title.",
+    "description_override_info": "Optional -- overrides the product's own description.",
+    "mockup_image": "Mockup image filename",
+    "mockup_image_info": "Optional -- a filename in this theme's assets folder (e.g. hoodie-model-back.png), for previewing real photography before a product exists. Ignored once a product is assigned above.",
     "products_to_show": "Products to show",
     "marquee_text": "Lines",
     "list_text_info": "One item per line.",

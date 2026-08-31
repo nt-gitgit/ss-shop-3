@@ -1,0 +1,334 @@
+{% comment %}
+  Product spotlight carousel: one product highlighted at a time -- image on
+  one side, title, short description and a "shop" arrow-link on the other --
+  stepped through with prev/next arrows. Each block can point at a real
+  product (title/description/image all pulled live) or stand alone with its
+  own heading and description text, the same optional-override pattern
+  `lookbook` uses for its images.
+
+  A block's `mockup_image` setting (a filename relative to this theme's
+  `assets/` folder, e.g. `hoodie-model-back.png`) fills the media slot when
+  there's no product yet -- for previewing real photography before a product
+  exists in the catalogue. It's a theme asset, not a Shopify Files upload, so
+  it works even without store/API access. A product's own image always wins
+  once one is assigned.
+
+  @example
+  {% section 'product-carousel' %}
+{% endcomment %}
+
+<div class="product-carousel {{ section.settings.theme }} full-width" data-reveal data-product-carousel>
+  {% if section.settings.label != blank %}
+    <div class="trumpet-row product-carousel__label">
+      <span class="trumpet-row__tick" aria-hidden="true"></span>
+      <span class="trumpet">{{ section.settings.label }}</span>
+    </div>
+  {% endif %}
+
+  {% if section.blocks.size > 0 %}
+    <div class="product-carousel__carousel">
+      {% if section.blocks.size > 1 %}
+        <button type="button" class="product-carousel__nav-btn product-carousel__nav-btn--prev" data-product-carousel-prev aria-label="{{ 'carousel.previous' | t }}">
+          <span class="border-icon has-border" aria-hidden="true">{{ 'icon-horizontal-arrow.svg' | inline_asset_content }}</span>
+        </button>
+      {% endif %}
+
+      <div class="product-carousel__viewport">
+        <div class="product-carousel__track" data-product-carousel-track>
+          {% for block in section.blocks %}
+            {% liquid
+              assign product = block.settings.product
+              assign title = block.settings.heading | default: product.title
+              assign description = block.settings.description
+              if description == blank and product != blank
+                assign description = product.description | strip_html | truncatewords: 30
+              endif
+            %}
+            <div class="product-carousel__slide" data-product-carousel-slide {% unless forloop.first %}aria-hidden="true" inert{% endunless %} {{ block.shopify_attributes }}>
+              <div class="product-carousel__media">
+                {% if product.featured_image %}
+                  {{
+                    product.featured_image
+                    | image_url: width: 1200
+                    | image_tag: loading: 'lazy', widths: '600,900,1200', sizes: '(min-width: 900px) 40vw, 100vw'
+                  }}
+                {% elsif block.settings.mockup_image != blank %}
+                  <img src="{{ block.settings.mockup_image | asset_url }}" width="1237" height="1271" loading="lazy" alt="{{ title | default: block.settings.placeholder_label | escape }}">
+                {% else %}
+                  {% render 'media-placeholder', class: 'product-carousel__placeholder', label: block.settings.placeholder_label %}
+                {% endif %}
+              </div>
+
+              <div class="product-carousel__copy">
+                {% if title != blank %}
+                  <h3 class="ts-body-xl product-carousel__title">{{ title }}</h3>
+                {% endif %}
+                {% if description != blank %}
+                  <p class="ts-body-l product-carousel__description">{{ description }}</p>
+                {% endif %}
+                {% if product != blank %}
+                  <a class="arrow-link product-carousel__cta" href="{{ product.url }}">
+                    <span class="link-title ts-cta">{{ block.settings.cta_label }}</span>
+                    <span class="button__icon" aria-hidden="true">{{ 'icon-arrow.svg' | inline_asset_content }}</span>
+                  </a>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      {% if section.blocks.size > 1 %}
+        <button type="button" class="product-carousel__nav-btn product-carousel__nav-btn--next" data-product-carousel-next aria-label="{{ 'carousel.next' | t }}">
+          <span class="border-icon has-border" aria-hidden="true">{{ 'icon-horizontal-arrow.svg' | inline_asset_content }}</span>
+        </button>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
+
+{% stylesheet %}
+  .product-carousel {
+    padding: var(--section-m) var(--grid-margin);
+  }
+
+  .product-carousel__label {
+    margin-bottom: 2rem;
+  }
+
+  .product-carousel__carousel {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .product-carousel__viewport {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .product-carousel__track {
+    display: flex;
+    transition: transform 500ms var(--ease-out);
+  }
+
+  .product-carousel__slide {
+    min-width: 0;
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .product-carousel__media {
+    position: relative;
+    grid-column: span 12;
+    aspect-ratio: 4 / 5;
+    border-radius: var(--br);
+    overflow: hidden;
+    background: hsla(var(--text-color) / 0.09);
+  }
+
+  .product-carousel__media img,
+  .product-carousel__placeholder {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .product-carousel__copy {
+    grid-column: span 12;
+    min-width: 0;
+    align-self: center;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  @media (min-width: 900px) {
+    .product-carousel__media {
+      grid-column: span 5;
+    }
+
+    .product-carousel__copy {
+      grid-column: 7 / span 6;
+    }
+  }
+
+  .product-carousel__title {
+    margin: 0;
+    max-width: 20ch;
+  }
+
+  .product-carousel__description {
+    margin: 0;
+    opacity: 0.8;
+  }
+
+  .product-carousel__cta {
+    margin-top: 0.5rem;
+  }
+
+  .product-carousel__nav-btn {
+    flex-shrink: 0;
+    background: none;
+    border: 0;
+    padding: 0;
+    color: currentcolor;
+    cursor: pointer;
+  }
+
+  .product-carousel__nav-btn--next {
+    transform: rotate(180deg);
+  }
+
+  @media (max-width: 899px) {
+    .product-carousel__carousel {
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+
+    .product-carousel__viewport {
+      order: 1;
+      flex-basis: 100%;
+    }
+
+    .product-carousel__nav-btn--prev {
+      order: 2;
+    }
+
+    .product-carousel__nav-btn--next {
+      order: 3;
+    }
+
+    .product-carousel__media {
+      aspect-ratio: 4 / 3;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .product-carousel__track {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  (function () {
+    var roots = document.querySelectorAll('[data-product-carousel]');
+
+    roots.forEach(function (root) {
+      var track = root.querySelector('[data-product-carousel-track]');
+      var slides = Array.prototype.slice.call(root.querySelectorAll('[data-product-carousel-slide]'));
+      var prevBtn = root.querySelector('[data-product-carousel-prev]');
+      var nextBtn = root.querySelector('[data-product-carousel-next]');
+      if (!track || slides.length < 2) return;
+
+      var index = 0;
+
+      function render() {
+        track.style.transform = 'translateX(-' + index * 100 + '%)';
+        slides.forEach(function (slide, i) {
+          if (i === index) {
+            slide.removeAttribute('aria-hidden');
+            slide.removeAttribute('inert');
+          } else {
+            slide.setAttribute('aria-hidden', 'true');
+            slide.setAttribute('inert', '');
+          }
+        });
+      }
+
+      function go(delta) {
+        index = (index + delta + slides.length) % slides.length;
+        render();
+      }
+
+      if (prevBtn) prevBtn.addEventListener('click', function () { go(-1); });
+      if (nextBtn) nextBtn.addEventListener('click', function () { go(1); });
+    });
+  })();
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:general.product_carousel",
+  "settings": [
+    {
+      "type": "select",
+      "id": "theme",
+      "label": "t:labels.theme",
+      "options": [
+        { "value": "theme-light", "label": "t:options.theme.light" },
+        { "value": "theme-dark", "label": "t:options.theme.dark" },
+        { "value": "theme-stone", "label": "t:options.theme.stone" },
+        { "value": "theme-red", "label": "t:options.theme.red" },
+        { "value": "theme-grey", "label": "t:options.theme.grey" },
+        { "value": "", "label": "t:options.theme.custom" }
+      ],
+      "default": "theme-light"
+    },
+    {
+      "type": "text",
+      "id": "label",
+      "label": "t:labels.text",
+      "default": "Shop the pieces"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "t:labels.product",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "t:labels.product"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "t:labels.heading",
+          "info": "t:labels.heading_override_info"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "t:labels.description",
+          "info": "t:labels.description_override_info"
+        },
+        {
+          "type": "text",
+          "id": "cta_label",
+          "label": "t:labels.button_label",
+          "default": "Shop now"
+        },
+        {
+          "type": "text",
+          "id": "placeholder_label",
+          "label": "t:labels.placeholder",
+          "default": "Image, 1200x1500"
+        },
+        {
+          "type": "text",
+          "id": "mockup_image",
+          "label": "t:labels.mockup_image",
+          "info": "t:labels.mockup_image_info"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:general.product_carousel",
+      "blocks": [
+        { "type": "slide", "settings": { "heading": "The Overshirt", "description": "Boiled wool, two chest pockets, cut long enough to layer.", "cta_label": "Shop now" } },
+        { "type": "slide", "settings": { "heading": "The Beanie", "description": "Ribbed merino, one size, the one everyone asks about.", "cta_label": "Shop now" } },
+        { "type": "slide", "settings": { "heading": "The Tote", "description": "Heavy canvas, screen-printed, holds more than it looks like it should.", "cta_label": "Shop now" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

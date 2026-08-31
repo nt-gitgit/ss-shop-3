@@ -65,6 +65,10 @@
     "gallery": "Product image",
     "from": "From"
   },
+  "carousel": {
+    "previous": "Previous product",
+    "next": "Next product"
+  },
   "collections": {
     "title": "Collection",
     "no_products": "No products to show yet.",
