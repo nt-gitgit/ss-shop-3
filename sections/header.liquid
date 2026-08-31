@@ -7,7 +7,7 @@
   {% section 'header' %}
 {% endcomment %}
 
-<header class="site-header" data-site-header>
+<header class="site-header full-width" data-site-header>
   <a href="{{ routes.root_url }}" class="site-header__brand">
     <span class="site-header__mark" aria-hidden="true">{{ 'icon-logo.svg' | inline_asset_content }}</span>
     <span class="site-header__wordmark">{{ shop.name }}</span>
@@ -57,7 +57,7 @@
     align-items: center;
     gap: 24px;
     height: var(--header-height);
-    padding: 0 20px 0 var(--grid-margin);
+    padding: 0 var(--grid-margin);
     background-color: hsla(var(--background-color) / 0.92);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
