@@ -6,15 +6,15 @@
   {% section 'hero' %}
 {% endcomment %}
 
-<div class="hero {{ section.settings.theme }} full-width" data-reveal>
-  <div class="trumpet-row">
+<div class="hero {{ section.settings.theme }} full-width">
+  <div class="trumpet-row" data-reveal>
     <span class="trumpet-row__tick" aria-hidden="true"></span>
     <span class="trumpet">{{ section.settings.eyebrow }}</span>
   </div>
 
-  <h1 class="ts-h1 hero__heading">{{ section.settings.heading }}</h1>
+  <h1 class="ts-h1 hero__heading" data-reveal style="--reveal-delay: 0.15s;">{{ section.settings.heading }}</h1>
 
-  <div class="hero__info-row">
+  <div class="hero__info-row" data-reveal style="--reveal-delay: 0.3s;">
     <div class="hero__info-col">
       <div class="trumpet hero__info-label">{{ section.settings.col_1_label }}</div>
       <div class="ts-body-l">{{ section.settings.col_1_body }}</div>
