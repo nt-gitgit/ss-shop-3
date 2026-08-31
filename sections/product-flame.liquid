@@ -1,0 +1,234 @@
+{% comment %}
+  A playful scroll-pinned interaction for the lighter: the flame grows as
+  the visitor scrolls through the section, and the flint wheel is a
+  clickable "flick" that flares the flame and counts up a running total
+  (persisted in localStorage, purely for fun -- no real game state).
+  Used in place of the spec section on this one product's alternate
+  template (templates/product.lighter.json).
+
+  @example
+  {% section 'product-flame' %}
+{% endcomment %}
+
+<section class="product-flame full-width" data-flame-section>
+  <div class="product-flame__track" data-flame-track>
+    <div class="product-flame__stage">
+      <span class="trumpet product-flame__hint" data-flame-hint>{{ 'products.flame_scroll_hint' | t }}</span>
+
+      <div class="product-flame__lighter">
+        <span class="product-flame__flame" data-flame-flame aria-hidden="true">
+          <span class="product-flame__flame-shape"></span>
+        </span>
+        <span class="product-flame__body" aria-hidden="true"></span>
+        <button type="button" class="product-flame__wheel" data-flame-flick aria-label="{{ 'products.flame_flick' | t }}"></button>
+      </div>
+
+      <p class="ts-h2 product-flame__payoff" data-flame-payoff>{{ 'products.flame_lit_heading' | t }}</p>
+
+      <p class="ts-label-s product-flame__counter">
+        <span data-flame-count>0</span> {{ 'products.flame_flicks' | t }}
+      </p>
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .product-flame {
+    position: relative;
+  }
+
+  .product-flame__track {
+    height: 250vh;
+  }
+
+  .product-flame__stage {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    overflow: hidden;
+  }
+
+  .product-flame__hint {
+    opacity: calc(1 - var(--flame-progress, 0) * 4);
+    transition: opacity 200ms var(--ease-out);
+  }
+
+  .product-flame__lighter {
+    position: relative;
+    width: 64px;
+    height: 190px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
+
+  .product-flame__body {
+    display: block;
+    width: 56px;
+    height: 130px;
+    border-radius: var(--br) var(--br) 18px 18px;
+    background: hsla(var(--text-color) / 0.08);
+    border: 1px solid var(--border-color);
+  }
+
+  .product-flame__wheel {
+    position: absolute;
+    left: 50%;
+    bottom: 130px;
+    transform: translateX(-50%);
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: hsl(var(--text-color));
+    border: 0;
+    cursor: pointer;
+    padding: 0;
+    transition: transform 150ms var(--ease-out);
+  }
+
+  .product-flame__wheel:hover,
+  .product-flame__wheel:focus-visible {
+    transform: translateX(-50%) scale(1.1);
+  }
+
+  .product-flame__wheel:active {
+    transform: translateX(-50%) scale(0.9);
+  }
+
+  .product-flame__flame {
+    position: absolute;
+    left: 50%;
+    bottom: 152px;
+    width: 44px;
+    height: 76px;
+    transform: translateX(-50%) scaleY(var(--flame-progress, 0));
+    transform-origin: bottom center;
+    opacity: var(--flame-progress, 0);
+    transition: transform 60ms linear, opacity 60ms linear;
+  }
+
+  .product-flame__flame-shape {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50% 50% 50% 50% / 65% 65% 35% 35%;
+    background: linear-gradient(180deg, var(--red) 0%, hsl(28 100% 56%) 55%, hsl(48 100% 62%) 100%);
+    animation: flame-flicker 2.6s ease-in-out infinite;
+    transform-origin: bottom center;
+  }
+
+  .product-flame__lighter.is-flicked .product-flame__flame-shape {
+    animation: flame-flare 400ms var(--ease-out);
+  }
+
+  @keyframes flame-flicker {
+    0%, 100% { transform: scaleY(1) scaleX(1) skewX(0deg); }
+    25% { transform: scaleY(1.05) scaleX(0.96) skewX(1deg); }
+    50% { transform: scaleY(0.94) scaleX(1.04) skewX(-1deg); }
+    75% { transform: scaleY(1.02) scaleX(0.98) skewX(1deg); }
+  }
+
+  @keyframes flame-flare {
+    0% { transform: scaleY(1); }
+    40% { transform: scaleY(1.5) scaleX(1.2); }
+    100% { transform: scaleY(1); }
+  }
+
+  .product-flame__payoff {
+    margin: 0;
+    text-align: center;
+    opacity: clamp(0, calc((var(--flame-progress, 0) - 0.85) * 6.6), 1);
+    transition: opacity 200ms var(--ease-out);
+  }
+
+  .product-flame__counter {
+    opacity: 0.55;
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .product-flame__flame-shape {
+      animation: none;
+    }
+
+    .product-flame__lighter.is-flicked .product-flame__flame-shape {
+      animation: none;
+    }
+
+    .product-flame__flame {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  (function () {
+    var section = document.querySelector('[data-flame-section]');
+    if (!section) return;
+
+    var track = section.querySelector('[data-flame-track]');
+    var lighter = section.querySelector('.product-flame__lighter');
+    var flickBtn = section.querySelector('[data-flame-flick]');
+    var countEl = section.querySelector('[data-flame-count]');
+    var storageKey = 'ss-lighter-flicks';
+
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    }
+
+    function updateProgress() {
+      var rect = track.getBoundingClientRect();
+      var total = rect.height - window.innerHeight;
+      if (total <= 0) return;
+      var progress = clamp(-rect.top / total, 0, 1);
+      section.style.setProperty('--flame-progress', progress.toFixed(3));
+    }
+
+    var ticking = false;
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(function () {
+        updateProgress();
+        ticking = false;
+      });
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    updateProgress();
+
+    var count = 0;
+    try {
+      count = parseInt(window.localStorage.getItem(storageKey), 10) || 0;
+    } catch (e) {}
+    if (countEl) countEl.textContent = count;
+
+    if (flickBtn) {
+      flickBtn.addEventListener('click', function () {
+        lighter.classList.remove('is-flicked');
+        // Force reflow so the animation restarts on repeated clicks.
+        void lighter.offsetWidth;
+        lighter.classList.add('is-flicked');
+
+        count += 1;
+        if (countEl) countEl.textContent = count;
+        try {
+          window.localStorage.setItem(storageKey, String(count));
+        } catch (e) {}
+      });
+    }
+  })();
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:general.product_flame",
+  "settings": []
+}
+{% endschema %}

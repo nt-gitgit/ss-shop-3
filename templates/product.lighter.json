@@ -1,0 +1,17 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-product",
+      "settings": {}
+    },
+    "statement": {
+      "type": "product-statement",
+      "settings": {}
+    },
+    "flame": {
+      "type": "product-flame",
+      "settings": {}
+    }
+  },
+  "order": ["main", "statement", "flame"]
+}

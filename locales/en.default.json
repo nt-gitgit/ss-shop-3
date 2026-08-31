@@ -68,7 +68,11 @@
     "description": "Description",
     "gallery": "Product image",
     "from": "From",
-    "figure": "FIG. {{ index }}"
+    "figure": "FIG. {{ index }}",
+    "flame_scroll_hint": "Scroll to light it",
+    "flame_flick": "Flick the lighter",
+    "flame_lit_heading": "Made to be flicked.",
+    "flame_flicks": "flicks"
   },
   "carousel": {
     "previous": "Previous product",
