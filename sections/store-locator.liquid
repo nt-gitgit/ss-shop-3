@@ -1,0 +1,569 @@
+{% comment %}
+  Store locator: a label + heading, a tall hero map with one numbered,
+  pulsating pin per block that has coordinates set, and a card grid below
+  it with the full address/hours/contact detail. Clicking a card's number
+  chip or a pin focuses the other. Map is Leaflet + Esri's free basemap
+  tiles (vendored in assets/leaflet.js, assets/leaflet.css,
+  assets/store-locator.js) -- no API key required, so it works the moment
+  coordinates are filled in.
+
+  Locations without both latitude and longitude still get a card; they
+  just don't get a pin or a locate button.
+
+  @example
+  {% section 'store-locator' %}
+{% endcomment %}
+
+{% liquid
+  assign has_coordinates = false
+  for block in section.blocks
+    if block.settings.lat != blank and block.settings.lng != blank
+      assign has_coordinates = true
+    endif
+  endfor
+%}
+
+<section id="stores" class="store-locator {{ section.settings.theme }} full-width" data-reveal>
+  <div class="store-locator__head">
+    <div class="trumpet-row">
+      <span class="trumpet-row__tick" aria-hidden="true"></span>
+      <span class="trumpet">{{ section.settings.label }}</span>
+    </div>
+    {% if section.settings.heading != blank %}
+      <h2 class="ts-h2 store-locator__heading">{{ section.settings.heading }}</h2>
+    {% endif %}
+  </div>
+
+  {% if section.blocks.size > 0 %}
+    <div data-store-locator data-directions-label="{{ 'general.store_locator.get_directions' | t }}">
+      {% if has_coordinates %}
+        <div class="store-locator__map-wrap">
+          <div class="store-locator__map" data-store-locator-map role="application" aria-label="{{ 'general.store_locator.map_label' | t }}"></div>
+        </div>
+      {% endif %}
+
+      <div class="store-locator__grid">
+        {% for block in section.blocks %}
+          {% liquid
+            assign map_href = block.settings.map_link
+            if map_href == blank
+              assign map_query = block.settings.name | append: ' ' | append: block.settings.address
+              assign map_href = map_query | url_encode | prepend: 'https://www.google.com/maps/search/?api=1&query='
+            endif
+            assign has_pin = false
+            if block.settings.lat != blank and block.settings.lng != blank
+              assign has_pin = true
+            endif
+            assign index_str = forloop.index | prepend: '0'
+            if forloop.index > 9
+              assign index_str = forloop.index
+            endif
+          %}
+          <div class="store-locator__card" data-store-locator-card="{{ block.id }}" {{ block.shopify_attributes }}>
+            <div class="store-locator__card-head">
+              {% if has_pin %}
+                <button type="button" class="store-locator__locate" data-store-locator-locate="{{ block.id }}" aria-label="{{ 'general.store_locator.show_on_map' | t }}">
+                  <span class="ts-label-s" aria-hidden="true">{{ index_str }}</span>
+                </button>
+              {% else %}
+                <span class="store-locator__locate store-locator__locate--static ts-label-s" aria-hidden="true">{{ index_str }}</span>
+              {% endif %}
+              {% if block.settings.name != blank %}
+                <h3 class="ts-body-xl store-locator__name">{{ block.settings.name }}</h3>
+              {% endif %}
+            </div>
+
+            {% if block.settings.address != blank %}
+              <p class="ts-body-l store-locator__address">{{ block.settings.address }}</p>
+            {% endif %}
+
+            {% if block.settings.hours != blank %}
+              <div class="store-locator__hours-block">
+                <span class="trumpet store-locator__col-label">{{ 'general.store_locator.hours' | t }}</span>
+                <p class="ts-body-l store-locator__hours">{{ block.settings.hours }}</p>
+              </div>
+            {% endif %}
+
+            {% if block.settings.phone != blank or block.settings.email != blank %}
+              <div class="store-locator__contact">
+                {% if block.settings.phone != blank %}
+                  <a href="tel:{{ block.settings.phone }}">{{ block.settings.phone }}</a>
+                {% endif %}
+                {% if block.settings.email != blank %}
+                  <a href="mailto:{{ block.settings.email }}">{{ block.settings.email }}</a>
+                {% endif %}
+              </div>
+            {% endif %}
+
+            <a class="arrow-link store-locator__directions" href="{{ map_href }}" target="_blank" rel="noopener">
+              <span class="link-title ts-cta">{{ 'general.store_locator.get_directions' | t }}</span>
+              <span class="button__icon" aria-hidden="true">{{ 'icon-arrow.svg' | inline_asset_content }}</span>
+            </a>
+          </div>
+        {% endfor %}
+      </div>
+
+      {% if has_coordinates %}
+        {% liquid
+          assign printed = 0
+        %}
+        {% capture locations_json %}[{% for block in section.blocks %}{% if block.settings.lat != blank and block.settings.lng != blank %}{% liquid
+            assign row_map_href = block.settings.map_link
+            if row_map_href == blank
+              assign row_map_query = block.settings.name | append: ' ' | append: block.settings.address
+              assign row_map_href = row_map_query | url_encode | prepend: 'https://www.google.com/maps/search/?api=1&query='
+            endif
+            assign row_index_str = forloop.index | prepend: '0'
+            if forloop.index > 9
+              assign row_index_str = forloop.index
+            endif
+          %}{% if printed > 0 %},{% endif %}{"id":{{ block.id | json }},"num":{{ row_index_str | json }},"name":{{ block.settings.name | json }},"address":{{ block.settings.address | json }},"lat":{{ block.settings.lat | json }},"lng":{{ block.settings.lng | json }},"mapHref":{{ row_map_href | json }}}{% liquid assign printed = printed | plus: 1 %}{% endif %}{% endfor %}]{% endcapture %}
+        <script type="application/json" data-store-locator-data>{{ locations_json }}</script>
+
+        {{ 'leaflet.css' | asset_url | stylesheet_tag }}
+        <script src="{{ 'leaflet.js' | asset_url }}" defer="defer"></script>
+        <script src="{{ 'store-locator.js' | asset_url }}" defer="defer"></script>
+      {% endif %}
+    </div>
+  {% endif %}
+</section>
+
+{% stylesheet %}
+  .store-locator {
+    padding: var(--section-m) var(--grid-margin);
+  }
+
+  .store-locator__head {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 40px;
+  }
+
+  .store-locator__heading {
+    max-width: 24ch;
+  }
+
+  .store-locator__map-wrap {
+    height: clamp(360px, 46vw, 640px);
+    border-radius: var(--br);
+    overflow: hidden;
+    background: hsla(var(--text-color) / 0.06);
+    margin-bottom: 40px;
+  }
+
+  .store-locator__map {
+    height: 100%;
+  }
+
+  .store-locator__grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .store-locator__card {
+    grid-column: span 12;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--br);
+    padding: 24px;
+    border-left: 2px solid transparent;
+    transition: background-color 300ms var(--ease-out), border-color 300ms var(--ease-out);
+  }
+
+  @media (min-width: 640px) {
+    .store-locator__card {
+      grid-column: span 6;
+    }
+  }
+
+  @media (min-width: 1100px) {
+    .store-locator__card {
+      grid-column: span 4;
+    }
+  }
+
+  .store-locator__card.is-active {
+    background: hsla(var(--text-color) / 0.05);
+    border-left-color: var(--red);
+  }
+
+  .store-locator__card-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .store-locator__locate,
+  .store-locator__locate--static {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.9rem;
+    height: 1.9rem;
+    border-radius: var(--br);
+    border: 1px solid var(--detail-color);
+  }
+
+  .store-locator__locate {
+    background: none;
+    color: currentcolor;
+    cursor: pointer;
+    transition: background-color 300ms var(--ease-out), color 300ms var(--ease-out), border-color 300ms var(--ease-out), transform 200ms var(--ease-out);
+  }
+
+  .store-locator__locate:hover,
+  .store-locator__locate:focus-visible,
+  .store-locator__card.is-active .store-locator__locate {
+    background: var(--red);
+    border-color: var(--red);
+    color: var(--white);
+    transform: scale(1.08);
+  }
+
+  .store-locator__locate--static {
+    opacity: 0.35;
+  }
+
+  .store-locator__name {
+    margin: 0;
+  }
+
+  .store-locator__address,
+  .store-locator__hours {
+    margin: 0;
+    white-space: pre-line;
+    opacity: 0.75;
+  }
+
+  .store-locator__col-label {
+    opacity: 0.5;
+  }
+
+  .store-locator__hours-block,
+  .store-locator__contact {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .store-locator__contact a {
+    color: currentcolor;
+    width: fit-content;
+  }
+
+  .store-locator__directions {
+    margin-top: auto;
+    padding-top: 4px;
+  }
+
+  /**
+   * Leaflet map chrome, restyled to the house's hairline/no-shadow rules
+   * and its 5-colour palette -- the tile filter pushes Esri's basemap
+   * toward monochrome stone so it reads as art-directed, not embedded.
+   */
+  .leaflet-container {
+    font-family: var(--sans-serif);
+    background: hsla(var(--text-color) / 0.06);
+  }
+
+  .store-locator__map .leaflet-tile-pane {
+    filter: grayscale(70%) sepia(8%) saturate(1.15) contrast(1.08) brightness(1.05);
+  }
+
+  .store-locator__pin {
+    color: var(--red);
+    transition: transform 200ms var(--ease-out);
+  }
+
+  .store-locator__pin.is-active {
+    transform: scale(1.15);
+    z-index: 1000 !important;
+  }
+
+  .store-locator__pin svg {
+    fill: currentcolor;
+    display: block;
+    position: relative;
+  }
+
+  .store-locator__pin-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    fill: var(--white);
+    text-transform: uppercase;
+  }
+
+  /* The pulsating "radar" ring behind each pin. Staggered per marker via
+     an inline animation-delay so the map doesn't beat in lockstep. */
+  .store-locator__pin-pulse {
+    position: absolute;
+    left: 15px;
+    top: 27px;
+    width: 14px;
+    height: 14px;
+    margin: -7px 0 0 -7px;
+    border-radius: 50%;
+    background: var(--red);
+    opacity: 0.55;
+    animation: store-locator-pulse 2.4s var(--ease-out) infinite;
+    pointer-events: none;
+  }
+
+  @keyframes store-locator-pulse {
+    0% {
+      transform: scale(0.6);
+      opacity: 0.55;
+    }
+    70%,
+    100% {
+      transform: scale(3.2);
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .store-locator__pin-pulse {
+      animation: none;
+      opacity: 0.3;
+    }
+  }
+
+  .leaflet-control-zoom.leaflet-bar {
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--br) !important;
+    box-shadow: none !important;
+    overflow: hidden;
+  }
+
+  .leaflet-control-zoom a {
+    width: 30px !important;
+    height: 30px !important;
+    line-height: 30px !important;
+    background: hsl(var(--background-color)) !important;
+    color: hsl(var(--text-color)) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    transition: background-color 300ms var(--ease-out), color 300ms var(--ease-out);
+  }
+
+  .leaflet-control-zoom a:last-child {
+    border-bottom: 0 !important;
+  }
+
+  .leaflet-control-zoom a:hover,
+  .leaflet-control-zoom a:focus {
+    background: var(--red) !important;
+    color: var(--white) !important;
+  }
+
+  .leaflet-popup-content-wrapper,
+  .leaflet-popup-tip {
+    background: hsl(var(--background-color)) !important;
+    color: hsl(var(--text-color));
+    border: 1px solid var(--border-color);
+    border-radius: var(--br) !important;
+    box-shadow: none !important;
+  }
+
+  .leaflet-popup-content-wrapper {
+    padding: 2px;
+  }
+
+  .leaflet-popup-content {
+    margin: 14px 16px;
+    min-width: 180px;
+  }
+
+  .store-locator__popup-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .store-locator__popup-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .store-locator__popup-num {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: var(--br);
+    background: var(--red);
+    color: var(--white);
+  }
+
+  .store-locator__popup-name {
+    text-transform: none;
+    letter-spacing: normal;
+    font-family: var(--sans-serif);
+    font-size: var(--ts-body-l-fs);
+  }
+
+  .store-locator__popup-address {
+    font-family: var(--sans-serif);
+    font-size: var(--ts-body-s-fs);
+    opacity: 0.75;
+    white-space: pre-line;
+  }
+
+  .store-locator__popup-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--mono);
+    font-size: var(--ts-label-s-fs);
+    letter-spacing: var(--ts-label-s-ls);
+    text-transform: uppercase;
+    color: currentcolor;
+  }
+
+  .leaflet-control-attribution {
+    background: hsla(var(--background-color) / 0.8) !important;
+    color: hsl(var(--text-color)) !important;
+    font-family: var(--mono);
+    font-size: 9px !important;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  .leaflet-control-attribution a {
+    color: hsl(var(--text-color)) !important;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.store_locator",
+  "settings": [
+    {
+      "type": "select",
+      "id": "theme",
+      "label": "t:labels.theme",
+      "options": [
+        { "value": "theme-light", "label": "t:options.theme.light" },
+        { "value": "theme-beige", "label": "t:options.theme.beige" },
+        { "value": "theme-dark", "label": "t:options.theme.dark" },
+        { "value": "theme-red", "label": "t:options.theme.red" },
+        { "value": "theme-grey", "label": "t:options.theme.grey" },
+        { "value": "", "label": "t:options.theme.custom" }
+      ],
+      "default": ""
+    },
+    {
+      "type": "text",
+      "id": "label",
+      "label": "t:labels.text",
+      "default": "Find us"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:labels.heading",
+      "default": "Visit in person"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "location",
+      "name": "t:labels.store_name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "name",
+          "label": "t:labels.store_name",
+          "default": "Copenhagen — Nikolaj Plads"
+        },
+        {
+          "type": "textarea",
+          "id": "address",
+          "label": "t:labels.address",
+          "default": "Nikolaj Plads 8, 3\n1067 Copenhagen K\nDenmark"
+        },
+        {
+          "type": "textarea",
+          "id": "hours",
+          "label": "t:labels.hours",
+          "info": "t:labels.hours_info",
+          "default": "Mon–Fri: 10:00–18:00\nSat: 11:00–16:00\nSun: Closed"
+        },
+        {
+          "type": "text",
+          "id": "phone",
+          "label": "t:labels.phone",
+          "default": "+45 32 16 22 22"
+        },
+        {
+          "type": "text",
+          "id": "email",
+          "label": "t:labels.email",
+          "default": "contact@springsummer.dk"
+        },
+        {
+          "type": "header",
+          "content": "t:general.map_pin"
+        },
+        {
+          "type": "number",
+          "id": "lat",
+          "label": "t:labels.latitude",
+          "info": "t:labels.coordinates_info"
+        },
+        {
+          "type": "number",
+          "id": "lng",
+          "label": "t:labels.longitude"
+        },
+        {
+          "type": "url",
+          "id": "map_link",
+          "label": "t:labels.map_link",
+          "info": "t:labels.map_link_info"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:general.store_locator",
+      "blocks": [
+        {
+          "type": "location",
+          "settings": {
+            "name": "Copenhagen — Nikolaj Plads",
+            "address": "Nikolaj Plads 8, 3\n1067 Copenhagen K\nDenmark",
+            "hours": "Mon–Fri: 10:00–18:00\nSat: 11:00–16:00\nSun: Closed",
+            "phone": "+45 32 16 22 22",
+            "email": "contact@springsummer.dk",
+            "lat": 55.6766,
+            "lng": 12.5751
+          }
+        },
+        {
+          "type": "location",
+          "settings": {
+            "name": "Aarhus — Studio outlet",
+            "address": "Klostergade 34\n8000 Aarhus C\nDenmark",
+            "hours": "Wed–Fri: 11:00–17:30\nSat: 10:00–14:00",
+            "phone": "+45 32 16 22 25",
+            "email": "aarhus@springsummer.dk",
+            "lat": 56.1567,
+            "lng": 10.2107
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

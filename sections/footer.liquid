@@ -1,7 +1,7 @@
 {% comment %}
-  Site footer. A fat sign-off headline, a shop/help/studio link grid, a
-  native Shopify customer-signup newsletter form, and a byline row with the
-  live clock.
+  Site footer. A fat sign-off headline, a shop/help/studio link grid, and a
+  byline row with the live clock. The newsletter signup lives in the
+  widget rail now (sections/widget-rail.liquid).
 
   @example
   {% section 'footer' %}
@@ -51,30 +51,6 @@
         <div class="ts-body-s site-footer__address">{{ section.settings.address }}</div>
       </div>
     {% endif %}
-
-    <div class="site-footer__col">
-      <div class="trumpet site-footer__col-label">{{ 'general.footer.newsletter' | t }}</div>
-      {% form 'customer', id: 'footer-newsletter-form', class: 'site-footer__newsletter-form' %}
-        <input type="hidden" name="contact[tags]" value="newsletter">
-        {% if form.posted_successfully? %}
-          <p class="ts-label-s">{{ 'newsletter.success' | t }}</p>
-        {% else %}
-          <div class="site-footer__newsletter-row">
-            <input
-              type="email"
-              name="contact[email]"
-              class="site-footer__newsletter-input"
-              placeholder="{{ 'newsletter.email_label' | t }}"
-              required
-            >
-            <button type="submit" class="site-footer__newsletter-submit ts-cta">{{ 'newsletter.submit' | t }}</button>
-          </div>
-        {% endif %}
-      {% endform %}
-      {% if section.settings.newsletter_note != blank %}
-        <p class="ts-label-s site-footer__newsletter-note">{{ section.settings.newsletter_note }}</p>
-      {% endif %}
-    </div>
   </div>
 
   <div class="site-footer__bottom">
@@ -125,6 +101,14 @@
     padding: 56px var(--grid-margin) 32px;
   }
 
+  @media (max-width: 899px) {
+    /* Clears the widget rail's fixed bottom bar so the footer's own byline
+       row doesn't end up hidden underneath it. */
+    .site-footer {
+      padding-bottom: 96px;
+    }
+  }
+
   .site-footer__headline {
     font: 900 clamp(48px, 10vw, 180px) / 0.78 var(--display);
     letter-spacing: -0.01em;
@@ -139,7 +123,7 @@
 
   .site-footer__grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     gap: 24px;
     border-top: 1px solid var(--border-color);
     padding-top: 18px;
@@ -147,7 +131,6 @@
 
   @media (max-width: 899px) {
     .site-footer__grid {
-      grid-template-columns: repeat(2, 1fr);
       gap: 32px;
     }
   }
@@ -172,36 +155,6 @@
   .site-footer__address {
     opacity: 0.75;
     white-space: pre-line;
-  }
-
-  .site-footer__newsletter-row {
-    display: flex;
-    gap: 8px;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 8px;
-  }
-
-  .site-footer__newsletter-input {
-    flex: 1;
-    border: 0;
-    background: transparent;
-    color: currentcolor;
-    font-family: var(--sans-serif);
-    font-size: 0.85rem;
-    outline: none;
-  }
-
-  .site-footer__newsletter-submit {
-    background: transparent;
-    border: 0;
-    color: currentcolor;
-    text-transform: uppercase;
-    cursor: pointer;
-  }
-
-  .site-footer__newsletter-note {
-    opacity: 0.5;
-    margin-top: 10px;
   }
 
   .site-footer__bottom {
@@ -245,7 +198,7 @@
       "options": [
         { "value": "theme-light", "label": "t:options.theme.light" },
         { "value": "theme-dark", "label": "t:options.theme.dark" },
-        { "value": "theme-stone", "label": "t:options.theme.stone" },
+        { "value": "theme-beige", "label": "t:options.theme.beige" },
         { "value": "theme-red", "label": "t:options.theme.red" },
         { "value": "theme-grey", "label": "t:options.theme.grey" },
         { "value": "", "label": "t:options.theme.custom" }
@@ -285,12 +238,6 @@
       "id": "address",
       "label": "t:labels.address",
       "default": "Nikolaj Plads 8,3\n1067 Copenhagen\nDenmark"
-    },
-    {
-      "type": "text",
-      "id": "newsletter_note",
-      "label": "t:labels.newsletter_note",
-      "default": "Four times a year, roughly."
     },
     {
       "type": "header",

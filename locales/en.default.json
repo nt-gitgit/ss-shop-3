@@ -6,6 +6,7 @@
       "account": "Account",
       "cart": "Cart"
     },
+    "widget_rail": "Site utilities",
     "close": "Close",
     "made_by": "Made by",
     "questions": "Questions",
@@ -38,6 +39,12 @@
     "spec": {
       "heading": "Specification",
       "measurements": "Measurements / cm"
+    },
+    "store_locator": {
+      "hours": "Hours",
+      "get_directions": "Get directions",
+      "show_on_map": "Show on map",
+      "map_label": "Map of store locations"
     }
   },
   "shop": {

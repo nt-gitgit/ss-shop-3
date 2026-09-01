@@ -258,6 +258,28 @@ b {
 
 /** Layout: grid and columns */
 
+/**
+ * The shell: main content in a column that's narrower by --rail-width on
+ * desktop, so the widget rail (clock/cart/newsletter) is a real reserved
+ * column, not an overlay. Header and footer sit outside it, full-bleed.
+ */
+.ss-shell {
+  display: grid;
+  grid-template-columns: 1fr var(--rail-width);
+}
+
+.ss-shell__main {
+  min-width: 0;
+}
+
+@media (max-width: 899px) {
+  /* The rail becomes a fixed bottom bar under 900px -- keep the last bit
+     of whatever page content ends up above the footer from hiding under it. */
+  .ss-shell__main {
+    padding-bottom: 96px;
+  }
+}
+
 .shopify-section {
   position: relative;
   display: grid;

@@ -27,7 +27,12 @@
     "product_carousel": "Product carousel",
     "product_statement": "Product statement",
     "product_specs": "Product specification",
-    "product_flame": "Product flame interaction"
+    "product_flame": "Product flame interaction",
+    "store_locator": "Store locator",
+    "map_pin": "Map pin",
+    "widget_rail": "Widget rail",
+    "clock": "Clock",
+    "newsletter": "Newsletter"
   },
   "labels": {
     "menu": "Menu",
@@ -95,13 +100,21 @@
     "free_shipping_threshold": "Free shipping threshold",
     "free_shipping_threshold_info": "In your store's currency, e.g. 600. Used by the cart drawer's progress bar.",
     "badge_text": "Badge text",
-    "badge_text_info": "Shown bottom-right on the product image, e.g. a drop or season tag. Leave blank to hide."
+    "badge_text_info": "Shown bottom-right on the product image, e.g. a drop or season tag. Leave blank to hide.",
+    "store_name": "Location name",
+    "hours": "Opening hours",
+    "hours_info": "One entry per line, e.g. Mon–Fri: 10:00–18:00.",
+    "map_link": "Map link override",
+    "map_link_info": "Optional -- defaults to a Google Maps search built from the address above.",
+    "latitude": "Latitude",
+    "longitude": "Longitude",
+    "coordinates_info": "Both required to plot a pin on the map. Right-click the location on Google Maps and copy the two numbers shown at the top of the menu."
   },
   "options": {
     "theme": {
       "light": "Light (black on white)",
       "dark": "Dark (stone on black)",
-      "stone": "Stone (red on warm stone)",
+      "beige": "Beige (black on warm stone)",
       "red": "Signal red (stone on red)",
       "grey": "Grey (white on deep grey)",
       "custom": "Custom pair"

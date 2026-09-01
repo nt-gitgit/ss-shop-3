@@ -51,7 +51,38 @@
     "studio-note": {
       "type": "studio-note",
       "settings": {}
+    },
+    "store-locator": {
+      "type": "store-locator",
+      "blocks": {
+        "location-1": {
+          "type": "location",
+          "settings": {
+            "name": "Copenhagen — Nikolaj Plads",
+            "address": "Nikolaj Plads 8, 3\n1067 Copenhagen K\nDenmark",
+            "hours": "Mon–Fri: 10:00–18:00\nSat: 11:00–16:00\nSun: Closed",
+            "phone": "+45 32 16 22 22",
+            "email": "contact@springsummer.dk",
+            "lat": 55.6766,
+            "lng": 12.5751
+          }
+        },
+        "location-2": {
+          "type": "location",
+          "settings": {
+            "name": "Aarhus — Studio outlet",
+            "address": "Klostergade 34\n8000 Aarhus C\nDenmark",
+            "hours": "Wed–Fri: 11:00–17:30\nSat: 10:00–14:00",
+            "phone": "+45 32 16 22 25",
+            "email": "aarhus@springsummer.dk",
+            "lat": 56.1567,
+            "lng": 10.2107
+          }
+        }
+      },
+      "block_order": ["location-1", "location-2"],
+      "settings": {}
     }
   },
-  "order": ["hero", "campaign-banner", "black-friday", "drop", "marquee", "lookbook", "studio-note"]
+  "order": ["hero", "campaign-banner", "black-friday", "drop", "marquee", "lookbook", "studio-note", "store-locator"]
 }

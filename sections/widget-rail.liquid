@@ -1,0 +1,245 @@
+{% comment %}
+  Widget rail: the design system's signature layout move -- a persistent
+  column of small utility widgets (clock, cart, newsletter by default),
+  sticky on the right at desktop and collapsing to a fixed bottom bar on
+  mobile. Rendered once, directly from layout/theme.liquid inside
+  .ss-shell -- same "static section in the layout" pattern already proven
+  by sections/cart-drawer.liquid, so it appears on every page and stays
+  editable in the theme editor without living inside a JSON template.
+
+  @example
+  {% section 'widget-rail' %}
+{% endcomment %}
+
+<aside class="widget-rail full-width" aria-label="{{ 'general.widget_rail' | t }}">
+  {% for block in section.blocks %}
+    <div class="ss-widget widget-rail__widget widget-rail__widget--{{ block.type }}" {{ block.shopify_attributes }}>
+      {% case block.type %}
+        {% when 'cart' %}
+          <button type="button" class="widget-rail__cart ts-label-s" data-cart-toggle>
+            <span class="border-icon has-border" aria-hidden="true">{{ 'icon-cart.svg' | inline_asset_content }}</span>
+            <span>{{ 'general.accessibility.cart' | t }} [<span data-cart-count>{{ cart.item_count }}</span>]</span>
+          </button>
+
+        {% when 'newsletter' %}
+          <span class="trumpet widget-rail__label">{{ 'general.footer.newsletter' | t }}</span>
+          {% form 'customer', id: 'rail-newsletter-form', class: 'widget-rail__newsletter-form' %}
+            <input type="hidden" name="contact[tags]" value="newsletter">
+            {% if form.posted_successfully? %}
+              <p class="ts-label-s">{{ 'newsletter.success' | t }}</p>
+            {% else %}
+              <div class="widget-rail__newsletter-row">
+                <input
+                  type="email"
+                  name="contact[email]"
+                  class="widget-rail__newsletter-input"
+                  placeholder="{{ 'newsletter.email_label' | t }}"
+                  required
+                >
+                <button type="submit" class="widget-rail__newsletter-submit ts-cta">{{ 'newsletter.submit' | t }}</button>
+              </div>
+            {% endif %}
+          {% endform %}
+          {% if block.settings.note != blank %}
+            <p class="ts-label-s widget-rail__note">{{ block.settings.note }}</p>
+          {% endif %}
+
+        {% when 'clock' %}
+          <span class="widget-rail__clock">
+            {% render 'clock', timezone: block.settings.timezone, show_readout: block.settings.show_readout %}
+            {% if block.settings.city != blank %}
+              <span>{{ block.settings.city }}</span>
+            {% endif %}
+          </span>
+      {% endcase %}
+    </div>
+  {% endfor %}
+</aside>
+
+{% stylesheet %}
+  .widget-rail {
+    position: sticky;
+    top: var(--header-height);
+    max-height: calc(100vh - var(--header-height));
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    z-index: 30;
+  }
+
+  .ss-widget {
+    border: 1px solid var(--border-color);
+    border-radius: var(--br);
+    padding: 14px;
+    background: hsla(var(--background-color) / 0.75);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    transition: background-color var(--theme-transition), border-color var(--theme-transition);
+  }
+
+  .widget-rail__widget--clock {
+    border: none;
+    background: none;
+    backdrop-filter: none;
+    padding: 0;
+    margin-top: auto;
+  }
+
+  .widget-rail__cart {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    background: none;
+    border: 0;
+    padding: 0;
+    color: currentcolor;
+    cursor: pointer;
+    font-variant-numeric: tabular-nums;
+    text-align: left;
+  }
+
+  .widget-rail__label {
+    display: block;
+    opacity: 0.6;
+    margin-bottom: 10px;
+  }
+
+  .widget-rail__newsletter-row {
+    display: flex;
+    gap: 8px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 8px;
+  }
+
+  .widget-rail__newsletter-input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    color: currentcolor;
+    font-family: var(--sans-serif);
+    font-size: 0.85rem;
+    outline: none;
+  }
+
+  .widget-rail__newsletter-submit {
+    background: transparent;
+    border: 0;
+    color: currentcolor;
+    text-transform: uppercase;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .widget-rail__note {
+    opacity: 0.5;
+    margin-top: 10px;
+  }
+
+  .widget-rail__clock {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--mono);
+    font-size: var(--ts-label-s-fs);
+    line-height: var(--ts-label-s-lh);
+    letter-spacing: var(--ts-label-s-ls);
+    text-transform: uppercase;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    opacity: 0.55;
+  }
+
+  @media (max-width: 899px) {
+    .widget-rail {
+      position: fixed;
+      inset: auto 0 0 0;
+      top: auto;
+      max-height: none;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 10px var(--grid-margin);
+      gap: 8px;
+      overflow: visible;
+      z-index: 40;
+      pointer-events: none;
+    }
+
+    .widget-rail__widget {
+      pointer-events: auto;
+      padding: 10px 12px;
+    }
+
+    .widget-rail__widget--newsletter {
+      flex-basis: 100%;
+      order: -1;
+    }
+
+    .widget-rail__widget--clock {
+      margin-top: 0;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.widget_rail",
+  "settings": [],
+  "blocks": [
+    {
+      "type": "cart",
+      "name": "t:general.cart",
+      "settings": []
+    },
+    {
+      "type": "newsletter",
+      "name": "t:general.newsletter",
+      "settings": [
+        {
+          "type": "text",
+          "id": "note",
+          "label": "t:labels.newsletter_note",
+          "default": "Four times a year, roughly."
+        }
+      ]
+    },
+    {
+      "type": "clock",
+      "name": "t:general.clock",
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "show_readout",
+          "label": "t:labels.show_clock",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "city",
+          "label": "t:labels.city",
+          "default": "Copenhagen"
+        },
+        {
+          "type": "text",
+          "id": "timezone",
+          "label": "t:labels.timezone",
+          "info": "t:labels.timezone_info",
+          "default": "Europe/Copenhagen"
+        }
+      ]
+    }
+  ],
+  "default": {
+    "blocks": [
+      { "type": "cart" },
+      { "type": "newsletter" },
+      { "type": "clock" }
+    ]
+  }
+}
+{% endschema %}

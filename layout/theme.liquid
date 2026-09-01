@@ -43,9 +43,12 @@
 
     {% sections 'header-group' %}
 
-    <main id="main-content" tabindex="-1">
-      {{ content_for_layout }}
-    </main>
+    <div class="ss-shell">
+      <main id="main-content" class="ss-shell__main" tabindex="-1">
+        {{ content_for_layout }}
+      </main>
+      {% section 'widget-rail' %}
+    </div>
 
     {% sections 'footer-group' %}
 
