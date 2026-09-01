@@ -13,7 +13,6 @@
     "page": "Page",
     "nav": {
       "drop": "Drop 01",
-      "black_friday": "Black Friday",
       "lookbook": "Lookbook",
       "studio": "Studio note"
     },
@@ -43,8 +42,7 @@
     "store_locator": {
       "hours": "Hours",
       "get_directions": "Get directions",
-      "show_on_map": "Show on map",
-      "map_label": "Map of store locations"
+      "map_label": "Store locations map"
     }
   },
   "shop": {
@@ -75,11 +73,7 @@
     "description": "Description",
     "gallery": "Product image",
     "from": "From",
-    "figure": "FIG. {{ index }}",
-    "flame_scroll_hint": "Scroll to light it",
-    "flame_flick": "Flick the lighter",
-    "flame_lit_heading": "Made to be flicked.",
-    "flame_flicks": "flicks"
+    "figure": "FIG. {{ index }}"
   },
   "carousel": {
     "previous": "Previous product",
@@ -96,14 +90,6 @@
     "email_label": "Email",
     "submit": "Sign up",
     "success": "Thanks — you're on the list."
-  },
-  "countdown": {
-    "days": "Days",
-    "hours": "Hrs",
-    "minutes": "Min",
-    "seconds": "Sec",
-    "notify_submit": "Notify me",
-    "notify_success": "You're on the list — we'll email when the doors open."
   },
   "search": {
     "placeholder": "Search products and pages",

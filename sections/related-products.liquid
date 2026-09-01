@@ -1,0 +1,100 @@
+{% comment %}
+  Related products: other products from this product's own collection
+  (excluding itself), rendered through the same product-card tiles as
+  the drop grid. Falls back to the shop's full catalogue via the
+  automatic "All" collection when this product isn't in a collection of
+  its own, so the section still has something to show.
+
+  @example
+  {% section 'related-products' %}
+{% endcomment %}
+
+{% liquid
+  assign source_collection = product.collections.first
+  if source_collection == blank
+    assign source_collection = collections.all
+  endif
+%}
+
+<div class="related-products full-width" data-reveal>
+  <div class="related-products__header">
+    <div class="trumpet-row">
+      <span class="trumpet-row__tick" aria-hidden="true"></span>
+      <span class="trumpet">{{ section.settings.label }}</span>
+    </div>
+  </div>
+
+  {% liquid
+    assign shown = 0
+  %}
+
+  {% if source_collection != blank %}
+    <div class="related-products__grid">
+      {% for other_product in source_collection.products %}
+        {% unless other_product.id == product.id or shown >= section.settings.products_to_show %}
+          {% liquid
+            assign card_delay = shown | times: 0.06
+            assign card_index = shown | plus: 1 | prepend: '0' | slice: -2, 2
+            assign shown = shown | plus: 1
+          %}
+          {% render 'product-card', product: other_product, reveal_delay: card_delay, index: card_index %}
+        {% endunless %}
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% if shown == 0 %}
+    <p class="ts-body-l related-products__empty">{{ 'collections.no_products' | t }}</p>
+  {% endif %}
+</div>
+
+{% stylesheet %}
+  .related-products {
+    padding: 80px var(--grid-margin) 88px;
+  }
+
+  .related-products__header {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 16px;
+    margin-bottom: 32px;
+  }
+
+  .related-products__grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  @media (max-width: 899px) {
+    .related-products__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .related-products__empty {
+    opacity: 0.6;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.related_products",
+  "settings": [
+    {
+      "type": "text",
+      "id": "label",
+      "label": "t:labels.text",
+      "default": "You may also like"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "label": "t:labels.products_to_show",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "default": 4
+    }
+  ]
+}
+{% endschema %}

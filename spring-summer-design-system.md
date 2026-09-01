@@ -286,3 +286,667 @@ code,pre{font:300 var(--ts-label-m-fs)/var(--ts-label-m-lh) var(--mono);letter-s
 
 ## Icons
 No icon font (no Lucide/Heroicons/Font Awesome) in the original system — it uses ~17 custom single-color SVGs (`arrow`, `plus`, `tick`, `play`, `pause`, `star`, `eye`, `globe`, `hand`, `email`, `cc`, `dots`, `volume_on/off`, `horizontal-arrow`) driven by `currentColor`, wrapped in a `.chip` (see CSS above). If the original `SpringSummer Design System` folder's `assets/icons/` isn't available, use Lucide icons at 1.5px stroke as the closest substitute and note the swap.
+
+---
+
+# Design System Components
+
+## Elements & Icons
+
+The Spring/Summer design system uses a curated set of 21 custom single-color SVG icons, all scalable via `currentColor` and wrapped in reusable `.chip` containers (27×27px desktop, 40×40px mobile). Each icon follows the hairline aesthetic: clean, minimal stroke weight, uppercase labels when named.
+
+### Core Icon Set
+- Navigation: `arrow`, `horizontal-arrow`, `play`, `pause`
+- Actions: `plus`, `tick`, `hand`
+- Communication: `email`, `dots`
+- Information: `eye`, `globe`, `volume_on`, `volume_off`
+- Decorative: `star`
+- Commerce: `cc` (credit card icon for checkout)
+
+### Tag Component
+Tags are rendered as inline `.tag` elements with mono-family labels, optional icons, and hairline borders. Use for filtering, categorization, or skill highlighting.
+
+```css
+.ss-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--mono);
+  font-size: var(--ts-label-s-fs);
+  letter-spacing: var(--ts-label-s-ls);
+  text-transform: uppercase;
+  padding: 6px 10px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--br);
+  background: transparent;
+  color: var(--fg1);
+  white-space: nowrap;
+}
+.ss-tag .icon { display: inline-flex; width: 14px; height: 14px; }
+```
+
+### Play Button Overlay
+A play icon indicator (for video previews) is positioned absolutely at the center of a card or media element.
+
+```css
+.ss-play-button {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--br);
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+```
+
+---
+
+## Typography Scale & Type Specimens
+
+The Spring/Summer design system employs three primary typefaces from Pangram Pangram:
+
+- **PP Right Grotesk Compact Black**: Display typeface for H1 headlines — all caps, tight tracking, ultra-condensed weight.
+- **PP Neue Montreal**: Body and heading typeface for H2, body copy, and UI text — refined sans-serif for editorial content.
+- **PP Supply Mono**: Monospace for labels, CTAs, code snippets — all uppercase labels use this family.
+
+### Type Scale in Use
+
+| Role | Size (Desktop) | Size (Mobile) | Line Height | Letter Spacing | Font Family | Weight |
+|------|---|---|---|---|---|---|
+| H1 | clamp(86px, 10.5vw, 280px) | 56–86px | 0.76 | -0.01em | Grotesk | 900 |
+| H2 | clamp(56px, 8vw, 140px) | 32–56px | 1.0 | 0.02em | Montreal | 400 |
+| Body XL | clamp(24px, 3vw, 40px) | 18–24px | 1.1 | 0.02em | Montreal | 400 |
+| Body L | clamp(15px, 2vw, 18px) | 14–18px | 1.4 | 0.02em | Montreal | 400 |
+| Body M | 14px | 14px | 1.5 | 0.02em | Montreal | 400 |
+| Body S | 12px | 12px | 1.3 | 0.023em | Montreal | 400 |
+| Label M | 12px | 12px | 1.3 | 0.01em | Supply | 400 |
+| Label S (Trumpet) | 10px | 10px | 1.26 | 0.01em | Supply | 300 |
+| CTA / Button | 12px | 12px | 1.26 | 0.01em | Supply | 400 |
+
+### Specimen Sizing Rules
+
+- **H1 (headline)**: Display size, uppercase, tight leading. Used sparingly for page titles or dramatic section starts. Bleeds past grid on desktop via `.ss-bleed`.
+- **H2 (subheading)**: Section subheadings or feature titles. Flexible size between 56–140px depending on viewport.
+- **Body text**: All body copy uses Montreal at 14px base with contextual scaling. Maintains 1.4+ line height for readability.
+- **Labels & CTAs**: Supply mono, uppercase, 10–12px only. Never scale labels responsively — they anchor UI hierarchy.
+- **Trumpet labels**: The 10px `.trumpet` class marks section starts; appears above every major content section.
+
+---
+
+## Card Components
+
+Cards in the Spring/Summer system are minimal, borderless containers with optional image/video backgrounds, title overlays, and tag groups.
+
+### Card Patterns
+
+#### Work / Project Card
+A portfolio or case study teaser card — image-first, with minimal text overlay at top-left and tags at bottom-left.
+
+```css
+.ss-card-work {
+  position: relative;
+  aspect-ratio: 1/1.25;
+  border-radius: var(--br);
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--bg2), var(--bg1));
+  background-size: cover;
+  background-position: center;
+}
+.ss-card-work .title {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  color: white;
+  font-family: var(--sans-serif);
+  font-size: var(--ts-body-l-fs);
+  font-weight: 600;
+}
+.ss-card-work .tags {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  display: flex;
+  gap: 8px;
+  color: white;
+}
+.ss-card-work:hover {
+  opacity: 0.95;
+}
+```
+
+#### Shop / Product Card
+A product or item card with image, title below, price label, and optional in-stock indicator.
+
+```css
+.ss-card-shop {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.ss-card-shop .image {
+  width: 100%;
+  aspect-ratio: 1/1;
+  border-radius: var(--br);
+  background-size: cover;
+  background-position: center;
+}
+.ss-card-shop .info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ss-card-shop .title {
+  font-family: var(--sans-serif);
+  font-size: var(--ts-body-l-fs);
+  font-weight: 500;
+  color: var(--fg1);
+}
+.ss-card-shop .price {
+  font-family: var(--mono);
+  font-size: var(--ts-label-m-fs);
+  text-transform: uppercase;
+  letter-spacing: var(--ts-label-m-ls);
+  color: var(--fg2);
+}
+```
+
+#### Profile / Team Card
+A personnel or team member card with avatar, name, and title/role.
+
+```css
+.ss-card-profile {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.ss-card-profile .avatar {
+  width: 100%;
+  aspect-ratio: 1/1;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  border: 1px solid var(--hairline);
+}
+.ss-card-profile .name {
+  font-family: var(--sans-serif);
+  font-size: var(--ts-body-l-fs);
+  font-weight: 600;
+  color: var(--fg1);
+  margin: 0;
+}
+.ss-card-profile .role {
+  font-family: var(--mono);
+  font-size: var(--ts-label-s-fs);
+  text-transform: uppercase;
+  letter-spacing: var(--ts-label-s-ls);
+  color: var(--fg3);
+  margin: 0;
+}
+```
+
+#### Title Card
+A minimalist text-only card used for quotations, testimonials, or featured headlines.
+
+```css
+.ss-card-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  padding: 24px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--br);
+  background: var(--bg2);
+  text-align: center;
+}
+.ss-card-title h3 {
+  font-family: var(--sans-serif);
+  font-size: var(--ts-body-xl-fs);
+  line-height: var(--ts-body-xl-lh);
+  color: var(--fg1);
+  margin: 0;
+}
+.ss-card-title .attribution {
+  font-family: var(--mono);
+  font-size: var(--ts-label-s-fs);
+  text-transform: uppercase;
+  margin-top: 12px;
+  color: var(--fg3);
+}
+```
+
+---
+
+## Dynamic Content Blocks
+
+Reusable content modules for constructing editorial pages, landing pages, and dynamic section layouts.
+
+### Hero Block
+A full-width hero section with headline, subheading, optional media, and CTA.
+
+```css
+.ss-block-hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: center;
+  padding: 60px 0;
+}
+@media (max-width: 899px) {
+  .ss-block-hero {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+.ss-block-hero .content { display: flex; flex-direction: column; gap: 20px; }
+.ss-block-hero h1 { margin: 0; }
+.ss-block-hero .description { font-size: var(--ts-body-l-fs); line-height: 1.4; }
+.ss-block-hero .media { width: 100%; border-radius: var(--br); overflow: hidden; }
+```
+
+### Text + Media Block
+A two-column block pairing text content (prose, lists) with image or video on the side.
+
+```css
+.ss-block-text-media {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: start;
+}
+@media (max-width: 899px) {
+  .ss-block-text-media {
+    grid-template-columns: 1fr;
+  }
+}
+.ss-block-text-media .text { display: flex; flex-direction: column; gap: 16px; }
+.ss-block-text-media .media { width: 100%; border-radius: var(--br); overflow: hidden; }
+```
+
+### Carousel / Slider Block
+A horizontal scrollable container for related items (case studies, testimonials, gallery).
+
+```css
+.ss-block-carousel {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 12px;
+}
+.ss-block-carousel > * {
+  flex: 0 0 calc(100vw - 100px);
+  scroll-snap-align: start;
+}
+@media (min-width: 900px) {
+  .ss-block-carousel > * {
+    flex: 0 0 50%;
+  }
+}
+```
+
+### Grid Block
+A responsive multi-column grid for showcasing items (work samples, team, testimonials).
+
+```css
+.ss-block-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--grid-gap);
+}
+@media (min-width: 900px) {
+  .ss-block-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media (max-width: 899px) {
+  .ss-block-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+```
+
+### Testimonial Block
+A featured quote with attribution and optional image.
+
+```css
+.ss-block-testimonial {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 40px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--br);
+  background: var(--bg2);
+}
+.ss-block-testimonial blockquote {
+  font-size: var(--ts-body-xl-fs);
+  font-style: italic;
+  line-height: 1.4;
+  margin: 0;
+  color: var(--fg1);
+}
+.ss-block-testimonial .attribution {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--mono);
+  font-size: var(--ts-label-s-fs);
+  text-transform: uppercase;
+}
+.ss-block-testimonial .avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-size: cover;
+}
+```
+
+---
+
+## Global Components
+
+Reusable UI elements that appear across pages and templates.
+
+### Navigation Bar
+Sticky top navigation with logo/brand, menu links, and optional widget (cart, account).
+
+```css
+.ss-nav {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  height: var(--header-height);
+  padding: 0 var(--grid-margin);
+  border-bottom: 1px solid var(--hairline);
+  background: var(--bg1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  gap: 20px;
+}
+.ss-nav .logo { font-family: var(--display); font-weight: 900; text-transform: uppercase; }
+.ss-nav .menu { display: flex; gap: 30px; }
+.ss-nav .menu a { text-decoration: none; font-size: var(--ts-body-m-fs); color: var(--fg1); transition: opacity 0.3s; }
+.ss-nav .menu a:hover { opacity: 0.6; }
+.ss-nav .widget { display: flex; gap: 12px; }
+@media (max-width: 899px) {
+  .ss-nav .menu { display: none; }
+}
+```
+
+### Footer
+Multi-column footer with links, social, and legal.
+
+```css
+.ss-footer {
+  border-top: 1px solid var(--hairline);
+  padding: 60px var(--grid-margin) 40px;
+  background: var(--bg1);
+}
+.ss-footer .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 40px;
+  margin-bottom: 40px;
+}
+.ss-footer .group h4 {
+  font-family: var(--mono);
+  font-size: var(--ts-label-m-fs);
+  text-transform: uppercase;
+  letter-spacing: var(--ts-label-m-ls);
+  margin: 0 0 12px 0;
+  color: var(--fg1);
+}
+.ss-footer .group a {
+  display: block;
+  font-size: var(--ts-body-m-fs);
+  text-decoration: none;
+  color: var(--fg2);
+  margin-bottom: 8px;
+  transition: color 0.3s;
+}
+.ss-footer .group a:hover { color: var(--fg1); }
+.ss-footer .bottom { border-top: 1px solid var(--hairline); padding-top: 20px; display: flex; justify-content: space-between; font-size: var(--ts-label-s-fs); }
+```
+
+### Notification / Alert
+A dismissible notification banner for messages, errors, or confirmations.
+
+```css
+.ss-notification {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border-radius: var(--br);
+  border: 1px solid var(--hairline);
+  background: var(--bg2);
+  color: var(--fg1);
+  font-size: var(--ts-body-m-fs);
+  animation: slideIn 0.3s var(--ease-out);
+}
+.ss-notification.is-success { border-color: rgba(76, 175, 80, 0.3); background: rgba(76, 175, 80, 0.1); }
+.ss-notification.is-error { border-color: rgba(244, 67, 54, 0.3); background: rgba(244, 67, 54, 0.1); }
+.ss-notification.is-warning { border-color: rgba(255, 193, 7, 0.3); background: rgba(255, 193, 7, 0.1); }
+.ss-notification .close { cursor: pointer; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; }
+@keyframes slideIn { from { transform: translateY(-100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+```
+
+---
+
+## Color Palette & Design Tokens
+
+The Spring/Summer system uses a restrained 5-color palette optimized for both light and dark themes, with careful HSL definitions for accessible contrast and theme flexibility.
+
+### Core Colors
+
+| Color | Hex | HSL | Usage |
+|-------|-----|-----|-------|
+| Black | #000000 | hsl(0 0% 0%) | Primary text, dark theme foreground |
+| White | #FFFFFF | hsl(0 0% 100%) | Light theme background, light text |
+| Signal Red | #FF6B00 | hsl(359 99% 61%) | Accent, section backgrounds, highlights |
+| Stone Beige | #F3EFE4 | hsl(49 14% 85%) | Warm neutral background, light accents |
+| Deep Grey | #3A3A3A | hsl(0 0% 21%) | Secondary text, dark theme background |
+
+### Semantic Color Tokens
+
+```css
+/* Light Theme */
+.theme-light {
+  --fg1: hsl(0 0% 0%);        /* primary text */
+  --fg2: hsl(0 0% 0% / 0.6);   /* secondary text */
+  --fg3: hsl(0 0% 0% / 0.3);   /* tertiary / hint text */
+  --bg1: hsl(0 0% 100%);        /* primary background */
+  --bg2: hsl(0 0% 100% / 0.75); /* secondary bg / overlay */
+  --hairline: hsl(0 0% 0% / 0.2); /* subtle border */
+}
+
+/* Dark Theme */
+.theme-dark {
+  --fg1: hsl(0 0% 100%);          /* primary text */
+  --fg2: hsl(0 0% 100% / 0.6);    /* secondary text */
+  --fg3: hsl(0 0% 100% / 0.3);    /* tertiary text */
+  --bg1: hsl(0 0% 0%);             /* primary background */
+  --bg2: hsl(0 0% 0% / 0.75);     /* secondary bg / overlay */
+  --hairline: hsl(0 0% 100% / 0.2); /* subtle border */
+}
+
+/* Beige Theme */
+.theme-beige {
+  --fg1: hsl(0 0% 0%);
+  --fg2: hsl(0 0% 0% / 0.6);
+  --fg3: hsl(0 0% 0% / 0.3);
+  --bg1: hsl(49 14% 85%);          /* stone beige */
+  --bg2: hsl(49 14% 85% / 0.75);
+  --hairline: hsl(0 0% 0% / 0.2);
+}
+
+/* Signal Red Theme */
+.theme-yellow {  /* legacy naming */
+  --fg1: hsl(0 0% 0%);
+  --fg2: hsl(0 0% 0% / 0.6);
+  --fg3: hsl(0 0% 0% / 0.3);
+  --bg1: hsl(359 99% 61%);          /* signal red */
+  --bg2: hsl(359 99% 61% / 0.75);
+  --hairline: hsl(0 0% 0% / 0.2);
+}
+
+/* Grey Theme */
+.theme-grey {
+  --fg1: hsl(0 0% 100%);
+  --fg2: hsl(0 0% 100% / 0.6);
+  --fg3: hsl(0 0% 100% / 0.3);
+  --bg1: hsl(0 0% 21%);             /* deep grey */
+  --bg2: hsl(0 0% 21% / 0.75);
+  --hairline: hsl(0 0% 100% / 0.2);
+}
+```
+
+### Theme-Aware Component Usage
+
+All components automatically adapt to the active theme via CSS custom properties. For example, borders use `var(--hairline)`, text uses `var(--fg1)`, and backgrounds use `var(--bg1)`. No component-specific color overrides needed—theme switching is handled globally.
+
+---
+
+## Case Studies & Implementation Patterns
+
+The Spring/Summer design system excels at editorial layouts, product galleries, and case study documentation. Here are proven patterns.
+
+### Case Study Page Structure
+
+A typical case study follows this structure:
+1. **Hero section**: Full-width headline and context
+2. **Overview block**: Text introduction + featured image
+3. **Problem / Solution blocks**: Alternating text + media
+4. **Results / Metrics**: Grid of numbers and outcomes
+5. **Related work carousel**: Links to next project
+
+### Navigation for Case Studies
+
+Use breadcrumb labels and numbered sections to guide readers:
+
+```css
+.ss-case-study-header {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  margin-bottom: 60px;
+}
+.ss-case-study-header .breadcrumb {
+  font-family: var(--mono);
+  font-size: var(--ts-label-s-fs);
+  text-transform: uppercase;
+  color: var(--fg3);
+  letter-spacing: var(--ts-label-s-ls);
+}
+.ss-case-study-header h1 {
+  font-size: clamp(56px, 8vw, 140px);
+  line-height: 1.0;
+  margin: 0;
+}
+```
+
+### Metrics / Stats Grid
+
+For displaying project outcomes or key numbers:
+
+```css
+.ss-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 30px;
+  padding: 40px 0;
+}
+.ss-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ss-stat .number {
+  font-family: var(--display);
+  font-size: clamp(32px, 5vw, 80px);
+  font-weight: 900;
+  text-transform: uppercase;
+  line-height: 0.9;
+  color: var(--fg1);
+}
+.ss-stat .label {
+  font-family: var(--mono);
+  font-size: var(--ts-label-s-fs);
+  text-transform: uppercase;
+  letter-spacing: var(--ts-label-s-ls);
+  color: var(--fg3);
+}
+```
+
+---
+
+## Implementation Notes for Shopify Liquid
+
+When implementing Spring/Summer components in Shopify Liquid template files (`.liquid`), follow these conventions:
+
+1. **CSS Classes**: Use `.ss-*` prefix for structural classes (grid, layout, widgets). Use `.ts-*` for typography. This keeps styles namespaced and prevents collisions with Shopify's defaults.
+
+2. **Liquid Sections**: Create reusable sections for each component type (hero block, card grid, testimonial, etc.). Each section should accept Shopify block settings for content, colors, and layout options.
+
+3. **Theme Variables**: Expose the CSS custom properties (`--fg1`, `--bg1`, etc.) as Liquid theme settings so merchants can switch themes without editing templates.
+
+4. **Responsive Images**: Use Shopify's `{% liquid image_url %}` and `srcset` for optimal mobile/desktop delivery. Maintain aspect ratios with CSS `aspect-ratio` or `padding-bottom` trick for older browsers.
+
+5. **Accessibility**: Always include `alt` text on images, use semantic HTML (`<article>`, `<section>`, `<nav>`), and ensure link contrast meets WCAG AA standards (4.5:1 for text, 3:1 for graphics).
+
+Example Liquid section structure:
+
+```liquid
+{% comment %} sections/featured-case-study.liquid {% endcomment %}
+<div class="ss-block-hero" style="--grid-gap: {{ section.settings.gap | default: '40' }}px;">
+  <div class="content">
+    <span class="trumpet">{{ section.settings.label }}</span>
+    <h1 class="ts-h1">{{ section.settings.title }}</h1>
+    <p class="ts-body-l">{{ section.settings.description }}</p>
+    {% if section.settings.cta_text %}
+      <a href="{{ section.settings.cta_link }}" class="ss-cta">
+        {{ section.settings.cta_text }}
+        <span class="chip">{% include 'icon-arrow' %}</span>
+      </a>
+    {% endif %}
+  </div>
+  <div class="media">
+    {% if section.settings.image %}
+      <img src="{{ section.settings.image | img_url: '500x500' }}" alt="{{ section.settings.title }}" />
+    {% endif %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Featured Case Study",
+  "settings": [
+    { "type": "text", "id": "label", "label": "Label (Trumpet)" },
+    { "type": "text", "id": "title", "label": "Headline" },
+    { "type": "textarea", "id": "description", "label": "Description" },
+    { "type": "image_picker", "id": "image", "label": "Featured Image" },
+    { "type": "text", "id": "cta_text", "label": "CTA Text" },
+    { "type": "url", "id": "cta_link", "label": "CTA Link" }
+  ],
+  "presets": [
+    { "name": "Featured Case Study" }
+  ]
+}
+{% endschema %}
+```
+
+---
+
+## Summary
+
+The Spring/Summer design system provides a complete foundation for building cohesive, minimal, editorial-focused web experiences. Its strength lies in restraint: a 5-color palette, 3 typefaces, a 12-column grid with a signature rail, and hairline details. The system is intentionally opinionated—this constraint is the design.
+
+Use this system consistently across all pages and components. When tempted to add "just one more color" or "another radius size," remember: the confidence of the design comes from its limitations, not its flexibility.

@@ -8,10 +8,14 @@
       "type": "product-statement",
       "settings": {}
     },
-    "flame": {
-      "type": "product-flame",
+    "buy-the-look": {
+      "type": "buy-the-look",
+      "settings": {}
+    },
+    "related-products": {
+      "type": "related-products",
       "settings": {}
     }
   },
-  "order": ["main", "statement", "flame"]
+  "order": ["main", "statement", "buy-the-look", "related-products"]
 }

@@ -11,7 +11,15 @@
     "specs": {
       "type": "product-specs",
       "settings": {}
+    },
+    "buy-the-look": {
+      "type": "buy-the-look",
+      "settings": {}
+    },
+    "related-products": {
+      "type": "related-products",
+      "settings": {}
     }
   },
-  "order": ["main", "statement", "specs"]
+  "order": ["main", "statement", "specs", "buy-the-look", "related-products"]
 }

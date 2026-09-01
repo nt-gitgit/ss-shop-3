@@ -1,0 +1,68 @@
+{% comment %}
+  Buy the look: the other pieces worn together in this product's own
+  photography, so a shopper can add the whole outfit at once. Reads
+  product.metafields.custom.buy_the_look -- a "List of products"
+  metafield. Create it once in Admin: Settings > Custom data > Products >
+  Add definition > type "List of products", namespace and key
+  custom.buy_the_look. Renders nothing until a merchant has picked at
+  least one product for a given product's look, so it's safe to add to
+  every product template up front.
+
+  @example
+  {% section 'buy-the-look' %}
+{% endcomment %}
+
+{% liquid
+  assign look_products = product.metafields.custom.buy_the_look.value
+%}
+
+{% if look_products != blank %}
+  <div class="buy-the-look full-width" data-reveal>
+    <div class="trumpet-row buy-the-look__label">
+      <span class="trumpet-row__tick" aria-hidden="true"></span>
+      <span class="trumpet">{{ section.settings.label }}</span>
+    </div>
+
+    <div class="buy-the-look__grid">
+      {% for look_product in look_products %}
+        {% unless look_product.id == product.id %}
+          {% liquid
+            assign card_delay = forloop.index0 | times: 0.06
+            assign card_index = forloop.index | prepend: '0' | slice: -2, 2
+          %}
+          {% render 'product-card', product: look_product, reveal_delay: card_delay, index: card_index %}
+        {% endunless %}
+      {% endfor %}
+    </div>
+  </div>
+{% endif %}
+
+{% stylesheet %}
+  .buy-the-look {
+    padding: 56px var(--grid-margin);
+  }
+
+  .buy-the-look__label {
+    margin-bottom: 28px;
+  }
+
+  .buy-the-look__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.buy_the_look",
+  "settings": [
+    {
+      "type": "text",
+      "id": "label",
+      "label": "t:labels.text",
+      "default": "Buy the look"
+    }
+  ]
+}
+{% endschema %}

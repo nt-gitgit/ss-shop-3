@@ -10,10 +10,6 @@
         "image": "shopify://shop_images/campaign-merch-bundle.png"
       }
     },
-    "black-friday": {
-      "type": "black-friday",
-      "settings": {}
-    },
     "drop": {
       "type": "featured-collection",
       "settings": {
@@ -84,5 +80,5 @@
       "settings": {}
     }
   },
-  "order": ["hero", "campaign-banner", "black-friday", "drop", "marquee", "lookbook", "studio-note", "store-locator"]
+  "order": ["hero", "campaign-banner", "drop", "marquee", "lookbook", "studio-note", "store-locator"]
 }
