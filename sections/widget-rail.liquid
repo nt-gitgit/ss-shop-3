@@ -69,13 +69,16 @@
     z-index: 30;
   }
 
+  /**
+   * Solid, not the old frosted-glass translucency -- sections like the
+   * store locator's globe can now run full-bleed behind this rail, and a
+   * see-through widget over a moving globe stopped reading clearly.
+   */
   .ss-widget {
     border: 1px solid var(--border-color);
     border-radius: var(--br);
     padding: 14px;
-    background: hsla(var(--background-color) / 0.75);
-    backdrop-filter: blur(30px);
-    -webkit-backdrop-filter: blur(30px);
+    background: hsl(var(--background-color));
     transition: background-color var(--theme-transition), border-color var(--theme-transition);
   }
 

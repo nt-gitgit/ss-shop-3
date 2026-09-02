@@ -204,7 +204,7 @@
 
       view.cx = w / 2;
       view.cy = h / 2;
-      view.R = Math.min(w, h) * 0.42 * view.zoom;
+      view.R = Math.min(w, h) * 0.6 * view.zoom;
 
       ctx.save();
       ctx.beginPath();

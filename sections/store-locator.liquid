@@ -122,8 +122,13 @@
 
     display: grid;
     grid-template-columns: minmax(360px, 29vw) 1fr;
-    min-height: 620px;
-    margin: var(--section-m) var(--grid-margin);
+    height: calc(100vh - var(--header-height));
+    height: calc(100dvh - var(--header-height));
+    /* Extends past .ss-shell__main's own column into the widget rail's
+       reserved width (0 on mobile, where this is a no-op), so the globe
+       runs the full width of the viewport and sits behind the sticky
+       rail rather than stopping short of it. */
+    margin-right: calc(-1 * var(--rail-width));
     font-family: var(--sans-serif);
     font-size: var(--ts-body-m-fs);
     line-height: 1.5;
@@ -134,7 +139,6 @@
     .store-locator {
       grid-template-columns: 1fr;
       grid-template-rows: minmax(0, 1fr) 44vh;
-      margin: var(--section-s) var(--grid-margin);
     }
   }
 
