@@ -1,52 +1,123 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "hero": {
       "type": "hero",
-      "settings": {}
+      "settings": {
+        "theme": "",
+        "eyebrow": "Drop 01 — All Seasons · Printed in Copenhagen",
+        "heading": "Merch for all seasons",
+        "col_1_label": "The range",
+        "col_1_body": "Six things. Small runs. No season two promised.",
+        "col_2_label": "Ships from",
+        "col_2_body": "Nikolaj Plads 8,3 · 1067 Copenhagen",
+        "col_3_label": "Shipping",
+        "col_3_body": "Free over 600 DKK. Otherwise 45 DKK.",
+        "button_label": "Shop the drop",
+        "button_link": ""
+      }
     },
     "campaign-banner": {
       "type": "campaign-banner",
       "settings": {
-        "image": "shopify://shop_images/campaign-merch-bundle.png"
+        "image": "shopify://shop_images/campaign-merch-bundle.png",
+        "placeholder_label": "Campaign still, 2400x980",
+        "label_left": "SS·01·2026",
+        "label_right": "Allways in season"
       }
     },
     "drop": {
       "type": "featured-collection",
       "settings": {
+        "anchor": "drop",
         "collection": "all",
-        "anchor": "drop"
+        "products_to_show": 6,
+        "label": "The drop — six pieces",
+        "helper": "Pick a size to add. It goes straight in the bag."
       }
     },
     "marquee": {
       "type": "marquee",
-      "settings": {}
+      "settings": {
+        "theme": "theme-red",
+        "lines": "Free shipping over 600 DKK\nShips in 2–3 days from Copenhagen\n30 days to change your mind\nPrinted in small runs\nNo plastic in the parcel",
+        "speed": 38
+      }
     },
     "lookbook": {
       "type": "lookbook",
       "blocks": {
         "image-1": {
           "type": "image",
-          "settings": { "span": "7", "aspect_ratio": "4/3", "caption": "01 — Monday, 09:12. The hoodie has never left the building." }
+          "settings": {
+            "image": "shopify://shop_images/ChatGPT_Image_Sep_2_2026_09_32_58_AM.png",
+            "placeholder_label": "",
+            "span": "7",
+            "aspect_ratio": "4/3",
+            "caption": "01 — Monday, 09:12. The hoodie has never left the building."
+          }
         },
         "image-2": {
           "type": "image",
-          "settings": { "span": "5", "aspect_ratio": "4/5", "caption": "02 — Cap, worn by a producer who insists it's for the sun." }
+          "settings": {
+            "image": "shopify://shop_images/ChatGPT_Image_Sep_2_2026_09_41_14_AM.png",
+            "placeholder_label": "Image, 2000x1500",
+            "span": "5",
+            "aspect_ratio": "4/5",
+            "caption": "02 — Cap, worn by a producer who insists it's for the sun."
+          }
         },
         "image-3": {
           "type": "image",
-          "settings": { "span": "5", "aspect_ratio": "4/3", "caption": "03 — Nikolaj Plads to Torvehallerne, four minutes." }
+          "settings": {
+            "image": "shopify://shop_images/ChatGPT_Image_Sep_2_2026_09_46_40_AM.png",
+            "placeholder_label": "Image, 2000x1500",
+            "span": "5",
+            "aspect_ratio": "4/3",
+            "caption": "03 — Nikolaj Plads to Torvehallerne, four minutes."
+          }
         },
         "image-4": {
           "type": "image",
-          "settings": { "span": "7", "aspect_ratio": "16/9", "caption": "04 — One colour. One pass. One list of ten things." }
+          "settings": {
+            "image": "shopify://shop_images/ChatGPT_Image_Sep_2_2026_09_48_47_AM.png",
+            "placeholder_label": "Image, 2000x1500",
+            "span": "7",
+            "aspect_ratio": "16/9",
+            "caption": "04 — One colour. One pass. One list of ten things."
+          }
         }
       },
-      "block_order": ["image-1", "image-2", "image-3", "image-4"],
-      "settings": {}
+      "block_order": [
+        "image-1",
+        "image-2",
+        "image-3",
+        "image-4"
+      ],
+      "settings": {
+        "theme": "theme-red",
+        "label": "Lookbook — worn in, mostly at work"
+      }
     },
     "studio-note": {
       "type": "studio-note",
-      "settings": {}
+      "settings": {
+        "theme": "",
+        "label": "Studio note",
+        "statement": "We kept printing these for ourselves. People kept asking. So now there is a shop.",
+        "body": "<p>Everything here started as an internal joke or an internal need — a warm hoodie for a cold studio, a bag for carrying laptops across Nikolaj Plads, a sheet of stickers for the back of them. It is printed in small runs by people we know, packed by whoever is nearest the door, and restocked when we remember. If it sells out, that is honestly the most likely outcome.</p>",
+        "made_by": "A small team, over a decade, 300+ projects and now six garments",
+        "email": "contact@springsummer.dk",
+        "phone": "+45 32 16 22 22"
+      }
     },
     "store-locator": {
       "type": "store-locator",
@@ -125,8 +196,20 @@
         }
       },
       "block_order": ["location-1", "location-2", "location-3", "location-4"],
-      "settings": {}
+      "settings": {
+        "theme": "theme-beige",
+        "label": "Find us",
+        "heading": "Visit in person"
+      }
     }
   },
-  "order": ["hero", "campaign-banner", "drop", "marquee", "lookbook", "studio-note", "store-locator"]
+  "order": [
+    "hero",
+    "campaign-banner",
+    "drop",
+    "marquee",
+    "lookbook",
+    "studio-note",
+    "store-locator"
+  ]
 }
