@@ -88,6 +88,7 @@
         "image-4": {
           "type": "image",
           "settings": {
+            "image": "shopify://shop_images/ChatGPT_Image_Sep_2_2026_09_48_47_AM.png",
             "placeholder_label": "Image, 2000x1500",
             "span": "7",
             "aspect_ratio": "16/9",
