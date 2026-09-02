@@ -2,11 +2,16 @@
   A lookbook grid: up to four images, each a block with its own aspect
   ratio and caption, arranged in the house's asymmetric 12-column rhythm.
 
+  Carries no colour box of its own by default -- data-page-invert flips
+  the whole page to red/white while this is in view instead (see
+  snippets/scroll-invert.liquid), rather than this section painting its
+  own red rectangle.
+
   @example
   {% section 'lookbook' %}
 {% endcomment %}
 
-<div id="lookbook" class="lookbook {{ section.settings.theme }} full-width" data-reveal>
+<div id="lookbook" class="lookbook {{ section.settings.theme }} full-width" data-reveal data-page-invert="theme-red">
   <div class="trumpet-row lookbook__label">
     <span class="trumpet-row__tick" aria-hidden="true"></span>
     <span class="trumpet">{{ section.settings.label }}</span>
@@ -106,7 +111,7 @@
         { "value": "theme-grey", "label": "t:options.theme.grey" },
         { "value": "", "label": "t:options.theme.custom" }
       ],
-      "default": "theme-red"
+      "default": ""
     },
     {
       "type": "text",

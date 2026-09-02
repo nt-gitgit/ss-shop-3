@@ -103,7 +103,7 @@
         "image-4"
       ],
       "settings": {
-        "theme": "theme-red",
+        "theme": "",
         "label": "Lookbook — worn in, mostly at work"
       }
     },
@@ -119,89 +119,6 @@
         "phone": "+45 32 16 22 22"
       }
     },
-    "store-locator": {
-      "type": "store-locator",
-      "blocks": {
-        "location-1": {
-          "type": "location",
-          "settings": {
-            "name": "Copenhagen",
-            "address": "Store Strandstræde 14, 1255 København K",
-            "country": "Denmark",
-            "timezone": "Europe/Copenhagen",
-            "hours_mon": "10:00-18:00",
-            "hours_tue": "10:00-18:00",
-            "hours_wed": "10:00-18:00",
-            "hours_thu": "10:00-18:00",
-            "hours_fri": "10:00-18:00",
-            "hours_sat": "11:00-16:00",
-            "hours_sun": "",
-            "lat": 55.68,
-            "lon": 12.59
-          }
-        },
-        "location-2": {
-          "type": "location",
-          "settings": {
-            "name": "Aarhus",
-            "address": "Guldsmedgade 22, 8000 Aarhus C",
-            "country": "Denmark",
-            "timezone": "Europe/Copenhagen",
-            "hours_mon": "10:00-17:30",
-            "hours_tue": "10:00-17:30",
-            "hours_wed": "10:00-17:30",
-            "hours_thu": "10:00-17:30",
-            "hours_fri": "10:00-18:00",
-            "hours_sat": "10:00-15:00",
-            "hours_sun": "",
-            "lat": 56.158,
-            "lon": 10.21
-          }
-        },
-        "location-3": {
-          "type": "location",
-          "settings": {
-            "name": "Stockholm",
-            "address": "Bondegatan 48, 116 33 Stockholm",
-            "country": "Sweden",
-            "timezone": "Europe/Stockholm",
-            "hours_mon": "11:00-18:00",
-            "hours_tue": "11:00-18:00",
-            "hours_wed": "11:00-18:00",
-            "hours_thu": "11:00-18:00",
-            "hours_fri": "11:00-18:00",
-            "hours_sat": "12:00-16:00",
-            "hours_sun": "",
-            "lat": 59.313,
-            "lon": 18.08
-          }
-        },
-        "location-4": {
-          "type": "location",
-          "settings": {
-            "name": "Berlin",
-            "address": "Torstraße 107, 10119 Berlin",
-            "country": "Germany",
-            "timezone": "Europe/Berlin",
-            "hours_mon": "11:00-19:00",
-            "hours_tue": "11:00-19:00",
-            "hours_wed": "11:00-19:00",
-            "hours_thu": "11:00-19:00",
-            "hours_fri": "11:00-20:00",
-            "hours_sat": "11:00-18:00",
-            "hours_sun": "",
-            "lat": 52.53,
-            "lon": 13.41
-          }
-        }
-      },
-      "block_order": ["location-1", "location-2", "location-3", "location-4"],
-      "settings": {
-        "theme": "theme-beige",
-        "label": "Find us",
-        "heading": "Visit in person"
-      }
-    }
   },
   "order": [
     "hero",
@@ -209,7 +126,100 @@
     "drop",
     "marquee",
     "lookbook",
-    "studio-note",
-    "store-locator"
+    "studio-note"
   ]
 }
+/*
+ * ------------------------------------------------------------
+ * Store locator -- taken off the homepage but kept here, fully
+ * configured, so it can go straight back in. Shopify requires every
+ * key in "sections" to also appear in "order", so this can't just sit
+ * unlisted alongside them -- to re-enable, paste this whole object in
+ * as a new key under "sections" above (e.g. "store-locator") and add
+ * that same key to "order".
+ * ------------------------------------------------------------
+ *
+"store-locator": {
+  "type": "store-locator",
+  "blocks": {
+    "location-1": {
+      "type": "location",
+      "settings": {
+        "name": "Copenhagen",
+        "address": "Store Strandstræde 14, 1255 København K",
+        "country": "Denmark",
+        "timezone": "Europe/Copenhagen",
+        "hours_mon": "10:00-18:00",
+        "hours_tue": "10:00-18:00",
+        "hours_wed": "10:00-18:00",
+        "hours_thu": "10:00-18:00",
+        "hours_fri": "10:00-18:00",
+        "hours_sat": "11:00-16:00",
+        "hours_sun": "",
+        "lat": 55.68,
+        "lon": 12.59
+      }
+    },
+    "location-2": {
+      "type": "location",
+      "settings": {
+        "name": "Aarhus",
+        "address": "Guldsmedgade 22, 8000 Aarhus C",
+        "country": "Denmark",
+        "timezone": "Europe/Copenhagen",
+        "hours_mon": "10:00-17:30",
+        "hours_tue": "10:00-17:30",
+        "hours_wed": "10:00-17:30",
+        "hours_thu": "10:00-17:30",
+        "hours_fri": "10:00-18:00",
+        "hours_sat": "10:00-15:00",
+        "hours_sun": "",
+        "lat": 56.158,
+        "lon": 10.21
+      }
+    },
+    "location-3": {
+      "type": "location",
+      "settings": {
+        "name": "Stockholm",
+        "address": "Bondegatan 48, 116 33 Stockholm",
+        "country": "Sweden",
+        "timezone": "Europe/Stockholm",
+        "hours_mon": "11:00-18:00",
+        "hours_tue": "11:00-18:00",
+        "hours_wed": "11:00-18:00",
+        "hours_thu": "11:00-18:00",
+        "hours_fri": "11:00-18:00",
+        "hours_sat": "12:00-16:00",
+        "hours_sun": "",
+        "lat": 59.313,
+        "lon": 18.08
+      }
+    },
+    "location-4": {
+      "type": "location",
+      "settings": {
+        "name": "Berlin",
+        "address": "Torstraße 107, 10119 Berlin",
+        "country": "Germany",
+        "timezone": "Europe/Berlin",
+        "hours_mon": "11:00-19:00",
+        "hours_tue": "11:00-19:00",
+        "hours_wed": "11:00-19:00",
+        "hours_thu": "11:00-19:00",
+        "hours_fri": "11:00-20:00",
+        "hours_sat": "11:00-18:00",
+        "hours_sun": "",
+        "lat": 52.53,
+        "lon": 13.41
+      }
+    }
+  },
+  "block_order": ["location-1", "location-2", "location-3", "location-4"],
+  "settings": {
+    "theme": "theme-beige",
+    "label": "Find us",
+    "heading": "Visit in person"
+  }
+}
+ */

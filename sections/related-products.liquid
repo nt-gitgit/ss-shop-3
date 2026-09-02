@@ -3,7 +3,10 @@
   (excluding itself), rendered through the same product-card tiles as
   the drop grid. Falls back to the shop's full catalogue via the
   automatic "All" collection when this product isn't in a collection of
-  its own, so the section still has something to show.
+  its own -- and also tops up from that same catalogue when its own
+  collection exists but doesn't have enough siblings to fill the grid
+  (e.g. a product whose only collection is a single-item featured set) --
+  so the section still shows a full row.
 
   @example
   {% section 'related-products' %}
@@ -26,6 +29,7 @@
 
   {% liquid
     assign shown = 0
+    assign shown_ids = ''
   %}
 
   {% if source_collection != blank %}
@@ -36,10 +40,28 @@
             assign card_delay = shown | times: 0.06
             assign card_index = shown | plus: 1 | prepend: '0' | slice: -2, 2
             assign shown = shown | plus: 1
+            assign shown_ids = shown_ids | append: other_product.id | append: '|'
           %}
           {% render 'product-card', product: other_product, reveal_delay: card_delay, index: card_index %}
         {% endunless %}
       {% endfor %}
+
+      {% if shown < section.settings.products_to_show and source_collection.handle != 'all' %}
+        {% for other_product in collections.all.products %}
+          {% liquid
+            assign id_token = other_product.id | append: '|'
+          %}
+          {% unless other_product.id == product.id or shown >= section.settings.products_to_show or shown_ids contains id_token %}
+            {% liquid
+              assign card_delay = shown | times: 0.06
+              assign card_index = shown | plus: 1 | prepend: '0' | slice: -2, 2
+              assign shown = shown | plus: 1
+              assign shown_ids = shown_ids | append: id_token
+            %}
+            {% render 'product-card', product: other_product, reveal_delay: card_delay, index: card_index %}
+          {% endunless %}
+        {% endfor %}
+      {% endif %}
     </div>
   {% endif %}
 

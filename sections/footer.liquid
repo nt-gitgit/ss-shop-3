@@ -3,11 +3,15 @@
   byline row with the live clock. The newsletter signup lives in the
   widget rail now (sections/widget-rail.liquid).
 
+  data-page-invert flips the whole page to black/white as soon as the
+  footer comes into view, on every page -- a signal that you've reached
+  the bottom (see snippets/scroll-invert.liquid).
+
   @example
   {% section 'footer' %}
 {% endcomment %}
 
-<footer class="site-footer {{ section.settings.theme }} full-width">
+<footer class="site-footer {{ section.settings.theme }} full-width" data-page-invert="theme-dark">
   {% if section.settings.heading != blank %}
     <div class="site-footer__headline" data-reveal>{{ section.settings.heading }} <span class="site-footer__headline-cn">{{ section.settings.heading_cn }}</span></div>
   {% endif %}

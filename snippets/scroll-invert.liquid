@@ -1,0 +1,97 @@
+{% doc %}
+  Watches any element carrying `data-page-invert="theme-x"` and toggles
+  that class on <body> while the element is in view -- so scrolling into
+  a section inverts the whole page's colour pair instead of that section
+  painting its own box. Body already has the transition and the
+  `.theme-x` rules (see snippets/css-variables.liquid); this only ever
+  toggles the class.
+
+  Reverts to body's own base pair once nothing is intersecting. If more
+  than one trigger is intersecting at once, the most recently entered
+  one wins -- in an ordinary top-to-bottom scroll that's whichever is
+  furthest down the page.
+
+  A section that carries its OWN theme class (so it isn't just
+  inheriting body's) can still opt into a specific invert with
+  `data-invert-with="theme-x"` -- while the matching trigger is the
+  active winner, that class replaces whatever theme class the element
+  started with; otherwise it's restored. A `ss:page-invert` event fires
+  on `document` after every change, so anything drawn imperatively
+  (e.g. the store locator's canvas globe) can re-read its colours and
+  redraw instead of relying on CSS alone.
+
+  @example
+  <section data-page-invert="theme-red">...</section>
+  <section class="theme-beige" data-invert-with="theme-dark">...</section>
+{% enddoc %}
+
+{% javascript %}
+  (function () {
+    function observe() {
+      var triggers = Array.prototype.slice.call(document.querySelectorAll('[data-page-invert]'));
+      if (!triggers.length || !('IntersectionObserver' in window)) return;
+
+      var invertClasses = triggers
+        .map(function (el) {
+          return el.getAttribute('data-page-invert');
+        })
+        .filter(function (value, index, all) {
+          return all.indexOf(value) === index;
+        });
+
+      var followers = Array.prototype.slice.call(document.querySelectorAll('[data-invert-with]')).map(function (el) {
+        var defaultClass = '';
+        Array.prototype.forEach.call(el.classList, function (cls) {
+          if (/^theme-/.test(cls)) defaultClass = cls;
+        });
+        return { el: el, defaultClass: defaultClass, followClass: el.getAttribute('data-invert-with') };
+      });
+
+      var active = [];
+
+      function apply() {
+        invertClasses.forEach(function (cls) {
+          document.body.classList.remove(cls);
+        });
+        var winner = active[active.length - 1];
+        var winnerClass = winner ? winner.getAttribute('data-page-invert') : null;
+        if (winnerClass) document.body.classList.add(winnerClass);
+
+        followers.forEach(function (follower) {
+          var target = follower.followClass === winnerClass ? follower.followClass : follower.defaultClass;
+          [follower.defaultClass, follower.followClass].forEach(function (cls) {
+            if (cls && cls !== target) follower.el.classList.remove(cls);
+          });
+          if (target) follower.el.classList.add(target);
+        });
+
+        document.dispatchEvent(new CustomEvent('ss:page-invert', { detail: { theme: winnerClass } }));
+      }
+
+      var observer = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            var index = active.indexOf(entry.target);
+            if (entry.isIntersecting) {
+              if (index === -1) active.push(entry.target);
+            } else if (index !== -1) {
+              active.splice(index, 1);
+            }
+          });
+          apply();
+        },
+        { threshold: 0.2 }
+      );
+
+      triggers.forEach(function (el) {
+        observer.observe(el);
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', observe);
+    } else {
+      observe();
+    }
+  })();
+{% endjavascript %}

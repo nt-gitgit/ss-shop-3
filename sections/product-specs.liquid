@@ -50,7 +50,7 @@
             <p class="ts-label-s">{{ 'newsletter.success' | t }}</p>
           {% else %}
             <div class="product-specs__newsletter-row">
-              <input type="email" name="contact[email]" class="product-specs__newsletter-input" placeholder="{{ 'newsletter.email_label' | t }}" required>
+              <input type="email" name="contact[email]" class="field product-specs__newsletter-input" placeholder="{{ 'newsletter.email_label' | t }}" required>
               <span class="ts-label-s">{{ 'newsletter.submit' | t }}</span>
             </div>
           {% endif %}
@@ -152,18 +152,13 @@
     display: flex;
     gap: 8px;
     align-items: center;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 8px;
   }
 
+  /* The shared .field primitive (snippets/ui-components.liquid) covers
+     border, background, font and padding -- this just fits it into the
+     row alongside the submit label. */
   .product-specs__newsletter-input {
     flex: 1;
-    border: 0;
-    background: transparent;
-    color: currentcolor;
-    font-family: var(--mono);
-    font-size: var(--ts-body-s-fs);
-    outline: none;
   }
 {% endstylesheet %}
 

@@ -3,11 +3,16 @@
   and a short body. Used on the product page between the buy box and the
   spec section, but generic enough to drop anywhere.
 
+  Carries no colour box of its own by default -- data-page-invert makes
+  the whole page flip to red/white while this is in view instead (see
+  snippets/scroll-invert.liquid), rather than this section painting its
+  own red rectangle.
+
   @example
   {% section 'product-statement' %}
 {% endcomment %}
 
-<section class="product-statement {{ section.settings.theme }} full-width">
+<section class="product-statement {{ section.settings.theme }} full-width" data-page-invert="theme-red">
   <div class="product-statement__content">
     {% if section.settings.eyebrow != blank %}
       <span class="trumpet">{{ section.settings.eyebrow }}</span>
@@ -58,7 +63,7 @@
         { "value": "theme-grey", "label": "t:options.theme.grey" },
         { "value": "", "label": "t:options.theme.custom" }
       ],
-      "default": "theme-red"
+      "default": ""
     },
     {
       "type": "text",

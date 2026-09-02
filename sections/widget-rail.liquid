@@ -32,7 +32,7 @@
                 <input
                   type="email"
                   name="contact[email]"
-                  class="widget-rail__newsletter-input"
+                  class="field widget-rail__newsletter-input"
                   placeholder="{{ 'newsletter.email_label' | t }}"
                   required
                 >
@@ -112,20 +112,16 @@
 
   .widget-rail__newsletter-row {
     display: flex;
+    align-items: center;
     gap: 8px;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 8px;
   }
 
+  /* The shared .field primitive (snippets/ui-components.liquid) covers
+     border, background, font and padding -- this just fits it into the
+     row alongside the submit button. */
   .widget-rail__newsletter-input {
     flex: 1;
     min-width: 0;
-    border: 0;
-    background: transparent;
-    color: currentcolor;
-    font-family: var(--sans-serif);
-    font-size: 0.85rem;
-    outline: none;
   }
 
   .widget-rail__newsletter-submit {

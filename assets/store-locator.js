@@ -102,17 +102,67 @@
     // and there's no colour seam between the panel and the sphere for the
     // circle to visibly crop against as it's zoomed in.
     var stageStyle = getComputedStyle(canvas.parentElement);
-    var SEA = stageStyle.backgroundColor;
+    var seaRgb = parseRgb(stageStyle.backgroundColor);
     var textRgb = parseRgb(stageStyle.color);
     var textRgba = function (alpha) {
       return 'rgba(' + textRgb.r + ',' + textRgb.g + ',' + textRgb.b + ',' + alpha + ')';
     };
-    var LAND = stageStyle.color;
+    var rgbToCss = function (rgb) {
+      return 'rgb(' + Math.round(rgb.r) + ',' + Math.round(rgb.g) + ',' + Math.round(rgb.b) + ')';
+    };
+    var SEA = rgbToCss(seaRgb);
+    var LAND = rgbToCss(textRgb);
     var LAND_D = textRgba(0.55);
     var CLOSED_COLOR = textRgba(0.4);
     var GRATICULE_COLOR = textRgba(0.08);
     var RIM_COLOR = textRgba(0.14);
     var ACTIVE_RING_COLOR = textRgba(0.35);
+
+    // A section with data-invert-with (see snippets/scroll-invert.liquid)
+    // can swap its own theme class at runtime -- e.g. following the
+    // footer's black invert on the landing page. CSS picks that up for
+    // the panel on its own, but the globe's colours were only ever read
+    // once at setup, so they're re-derived and cross-faded here whenever
+    // that happens.
+    function setColors(sea, text) {
+      seaRgb = sea;
+      textRgb = text;
+      SEA = rgbToCss(seaRgb);
+      LAND = rgbToCss(textRgb);
+      LAND_D = textRgba(0.55);
+      CLOSED_COLOR = textRgba(0.4);
+      GRATICULE_COLOR = textRgba(0.08);
+      RIM_COLOR = textRgba(0.14);
+      ACTIVE_RING_COLOR = textRgba(0.35);
+    }
+
+    function lerp(a, b, t) {
+      return a + (b - a) * t;
+    }
+
+    function lerpRgb(a, b, t) {
+      return { r: lerp(a.r, b.r, t), g: lerp(a.g, b.g, t), b: lerp(a.b, b.b, t) };
+    }
+
+    var colorTweenId = 0;
+    document.addEventListener('ss:page-invert', function () {
+      var target = getComputedStyle(canvas.parentElement);
+      var fromSea = seaRgb;
+      var fromText = textRgb;
+      var toSea = parseRgb(target.backgroundColor);
+      var toText = parseRgb(target.color);
+      var start = performance.now();
+      var myTweenId = ++colorTweenId;
+      function step(now) {
+        if (myTweenId !== colorTweenId) return; // superseded by a newer invert
+        var t = Math.min(1, (now - start) / 400);
+        var eased = easeInOutCirc(t);
+        setColors(lerpRgb(fromSea, toSea, eased), lerpRgb(fromText, toText, eased));
+        draw();
+        if (t < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    });
 
     var view = { lon: -14, lat: 22, zoom: 1, cx: 0, cy: 0, R: 1 };
     var spin = true; // idles until the first interaction
