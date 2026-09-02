@@ -40,9 +40,20 @@
       "measurements": "Measurements / cm"
     },
     "store_locator": {
-      "hours": "Hours",
-      "get_directions": "Get directions",
-      "map_label": "Store locations map"
+      "map_label": "Store locations map",
+      "search_placeholder": "City, address or postcode",
+      "filter_all": "All",
+      "filter_by_country": "Filter by country",
+      "store_summary": "{{ stores }} stores · {{ countries }} countries",
+      "no_match": "No match",
+      "empty_state": "Nothing here. Try a city, or clear the filters.",
+      "store_count": "{{ count }} stores",
+      "drag_to_spin": "Drag to spin",
+      "scroll_to_zoom": "Scroll to zoom",
+      "open_now": "Open now",
+      "closed": "Closed",
+      "zoom_out": "Zoom out",
+      "zoom_in": "Zoom in"
     }
   },
   "shop": {

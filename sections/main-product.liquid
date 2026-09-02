@@ -51,7 +51,14 @@
       <div class="product__info-sticky">
         <div class="product__heading-group">
           <span class="trumpet product__type">{{ product.type | default: 'Merch' }}</span>
-          <h1 class="ts-h2 product__title">{{ product.title }}</h1>
+          {% comment %}
+            A <wbr> after every slash gives the browser an explicit place
+            to break a compound title like "Spring/Summer" -- paired with
+            the overflow-wrap/word-break reset below, this is what turns
+            "no room on one line" into a clean second line instead of an
+            overflow or a mid-letter split.
+          {% endcomment %}
+          <h1 class="ts-h2 product__title">{{ product.title | replace: '/', '/<wbr>' }}</h1>
           {% if product.description != blank %}
             <div class="rich-text ts-body-l product__description">{{ product.description }}</div>
           {% endif %}
@@ -274,6 +281,13 @@
 
   .product__title {
     margin: 0;
+    /* Override the global h1 { overflow-wrap: break-word } (critical.css) --
+       at this heading's display size, break-word lets the browser split a
+       compound word like "Spring/Summer" mid-letter once even the half
+       after the slash doesn't fit. This keeps wrapping to real word
+       boundaries, so it drops to a second line intact instead. */
+    overflow-wrap: normal;
+    word-break: normal;
   }
 
   .product__description {
